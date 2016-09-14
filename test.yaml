@@ -1,0 +1,23 @@
+- hosts: jenkins
+  tasks: 
+#  - name: Do a yum update
+#    yum: name=* state=latest
+  - name: Install Figlet
+    yum:
+       name: figlet
+       state: present
+#  - name: Install git
+#    yum: 
+#      name: git 
+#      state: present
+#  - name: Install gcc
+#    yum: 
+#      name: gcc 
+#      state: present
+#  - name: Pull listener code from github to /code/listener
+#    git: 
+#      repo: git://github.com/scottorama1/listener 
+#      dest: /code/listener 
+#      clone: yes
+#  - name: compile listener code
+#    shell: make chdir=/code/listener

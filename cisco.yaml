@@ -1,0 +1,26 @@
+- name: Cisco IOS command
+  hosts: cisco
+  connection: local
+
+  tasks:
+  - name: define provider
+    set_fact:
+      provider:
+        username: admin
+        password: admin
+
+  - name: run commands
+    ios_command:
+       host: "{{ inventory_hostname }}"
+       provider: "{{ provider }}"
+       commands:
+        - show version
+    register: version
+  - debug: var=version.stdout_lines
+
+  - name: ios_config
+    ios_config: 
+       host: "{{ inventory_hostname }}"
+       provider: "{{ provider }}"
+       lines: 
+         - hostname foo
