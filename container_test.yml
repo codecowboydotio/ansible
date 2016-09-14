@@ -1,0 +1,23 @@
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+  tasks:
+  - name: Spin up a container
+    docker_container:
+     name: "container{{ item }}"
+     image: scottorama1/eap7
+     state: started
+    with_sequence: count=2
+  - name: get container IP
+    shell: ips
+    register: output_var
+#  - debug: var=output_var.stdout_lines
+  - name: Deploy war file
+    uri: 
+      url: "http://jenkins:8080/jenkins/job/deploy_to_eap/buildWithParameters?server={{ item }}&token=78915f568c3504976b97335e7e6c2102"
+      method: POST
+      user: admin
+      password: password
+      force_basic_auth: yes
+      status_code: 201
+    with_items: "{{ output_var.stdout_lines }}"

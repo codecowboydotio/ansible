@@ -1,0 +1,5 @@
+- hosts: cisco
+  connection: local
+  roles: 
+   - cisco-base
+   - cisco-3750
