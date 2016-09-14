@@ -1,0 +1,8 @@
+- include: yum_package.yml
+  when: ansible_pkg_mgr == 'yum'
+- include: apt_package.yml
+  when: ansible_pkg_mgr == 'apt'
+- include: cleanup.yml
+- include: git_pull.yml
+- include: bdb.yml
+- include: btc_compile.yml

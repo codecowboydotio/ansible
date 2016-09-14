@@ -1,0 +1,5 @@
+- name: Pull bitcoin code from github to {{ new_dir }}
+  git:
+    repo: git://github.com/bitcoin/bitcoin
+    dest: "{{ new_dir }}"
+    clone: yes

@@ -1,0 +1,8 @@
+cisco_username: admin
+cisco_password: admin
+cisco_interfaces:
+  - FastEthernet3/0/1
+  - FastEthernet3/0/2
+  - FastEthernet3/0/3
+  - FastEthernet3/0/4
+  - FastEthernet3/0/5

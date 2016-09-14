@@ -1,0 +1,6 @@
+- name: load dynamic 3750 template
+  ios_template:
+    host: "{{ inventory_hostname }}"
+    username: "{{ cisco_username }}"
+    password: "{{ cisco_password }}"
+    src: cisco_3750.j2

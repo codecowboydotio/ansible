@@ -1,0 +1,31 @@
+- name: Pull swig 3.x
+  git:
+    repo: git://github.com/swig/swig
+    dest: "{{ base_dir }}/swig"
+    clone: yes
+- name: Pull Sawtooth Core
+  git:
+    repo: git://github.com/IntelLedger/sawtooth-core.git
+    dest: "{{ base_dir }}/sawtooth-core"
+    clone: yes
+- name: Pull Sawtooth Dev Tools
+  git:
+    repo: git://github.com/IntelLedger/sawtooth-dev-tools.git
+    dest: "{{ base_dir }}/sawtooth-dev-tools"
+    clone: yes
+- name: Pull Sawtooth Docs
+  git:
+    repo: git://github.com/IntelLedger/sawtooth-docs.git
+    dest: "{{ base_dir }}/sawtooth-docs"
+    clone: yes
+- name: Pull Sawtooth Marketplace
+  git:
+    repo: git://github.com/IntelLedger/sawtooth-mktplace.git
+    dest: "{{ base_dir }}/sawtooth-mktplace"
+    clone: yes
+- name: Pull Sawtooth Validator
+  git:
+    repo: git://github.com/IntelLedger/sawtooth-validator.git
+    dest: "{{ base_dir }}/sawtooth-validator"
+    clone: yes
+

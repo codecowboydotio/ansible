@@ -1,0 +1,36 @@
+- name: Install Development Tools
+  yum:
+    name: "@Development Tools"
+    state: present
+- name: Install boost libraries
+  yum:
+    name: boost-devel
+    state: present
+- name: Install openssl libraries
+  yum:
+    name: openssl-devel
+    state: present
+- name: Install libevent libraries
+  yum:
+    name: libevent-devel
+    state: present
+- name: Install libdb++ libraries
+  yum:
+    name: libdb-cxx-devel
+    state: present
+- name: Install qt libraries
+  yum:
+    name: qt-devel
+    state: present
+- name: Install protobuf
+  yum:
+    name: protobuf-devel
+    state: present
+- name: Install qrencode
+  yum:
+    name: qrencode-devel
+    state: present
+- name: Install git
+  yum:
+    name: git
+    state: present

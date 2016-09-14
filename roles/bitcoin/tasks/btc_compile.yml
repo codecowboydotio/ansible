@@ -1,0 +1,12 @@
+- name: run autogen
+  shell: ./autogen.sh chdir={{ new_dir }}
+- name: run configure on bitcoin code
+  vars:
+   env:
+    CPPFLAGS: -I/root/bitcoin-new/{{ bdb_dir }}/build_unix/include/ -O2
+    LDFLAGS: -L/root/bitcoin-new/{{ bdb_dir }}/build_unix/lib/
+  environment: "{{ env }}"
+  shell: echo $CPPFLAGS ; echo $LDFLAGS ; ./configure --disable-tests --disable-gui-tests chdir={{ new_dir }} 
+#  shell: "echo $CPPFLAGS; ./configure --disable-tests --disable-gui-tests chdir={{ new_dir }}"
+- name: compile source
+  shell: make chdir={{ new_dir }}

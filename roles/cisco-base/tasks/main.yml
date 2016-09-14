@@ -1,0 +1,12 @@
+- name: load static base template
+  ios_template:
+    host: "{{ inventory_hostname }}"
+    username: "{{ cisco_username }}"
+    password: "{{ cisco_password }}"
+    src: files/cisco_base.txt
+- name: load dynamic base template
+  ios_template:
+    host: "{{ inventory_hostname }}"
+    username: "{{ cisco_username }}"
+    password: "{{ cisco_password }}"
+    src: cisco_base.j2

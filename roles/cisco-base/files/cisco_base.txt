@@ -1,0 +1,18 @@
+no service pad
+service timestamps debug datetime msec localtime
+service timestamps log datetime msec localtime
+service password-encryption
+logging buffered 51200
+no aaa new-model
+clock timezone aedt 10 0
+no ip source-route
+no ip domain lookup
+ip ssh version 2
+no ip http server
+no ip http secure-server
+snmp-server community ansibleROCKS RO
+snmp-server community ansibleROCKS RW
+line vty 0 4
+ login local
+ transport input ssh
+

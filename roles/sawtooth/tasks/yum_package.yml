@@ -1,0 +1,52 @@
+- name: Install Development Tools
+  yum:
+    name: "@Development Tools"
+    state: present
+- name: Install Python setuptools
+  yum:
+    name: python-setuptools
+    state: present
+- name: Install PIP
+  yum:
+    name: python-pip
+    state: present
+- name: Install twisted
+  yum:
+    name: python-twisted-web
+    state: present
+- name: Install python-devel
+  yum:
+    name: python-devel
+    state: present
+- name: Install python-enum
+  yum:
+    name: python-enum
+    state: present
+- name: Install gcc-c++
+  yum:
+    name: gcc-c++
+    state: present
+- name: Install json-c-devel
+  yum:
+    name: json-c-devel
+    state: present
+- name: Install cryptopp-devel
+  yum:
+    name: cryptopp-devel
+    state: present
+- name: Install git
+  yum:
+    name: git
+    state: present
+- name: Install pcre
+  yum:
+    name: pcre-devel
+    state: present
+- name: Install libffi
+  yum:
+    name: libffi-devel
+    state: present
+- name: Install openssl-devel
+  yum:
+    name: openssl-devel
+    state: present

@@ -1,0 +1,18 @@
+- name: run autogen on swig
+  shell: ./autogen.sh chdir={{ base_dir }}/swig
+- name: run configure on swig code
+  shell: ./configure chdir={{ base_dir }}/swig 
+- name: compile swig source
+  shell: make chdir={{ base_dir }}/swig
+- name: compile sawtooth core
+  shell: python setup.py build chdir={{ base_dir }}/sawtooth-core
+- name: compile sawtooth core
+  shell: python setup.py install chdir={{ base_dir }}/sawtooth-core
+- name: compile sawtooth marketplace
+  shell: python setup.py build chdir={{ base_dir }}/sawtooth-mktplace
+- name: compile sawtooth marketplace
+  shell: python setup.py install chdir={{ base_dir }}/sawtooth-mktplace
+- name: compile sawtooth validator
+  shell: python setup.py build chdir={{ base_dir }}/sawtooth-validator
+- name: compile sawtooth validator
+  shell: python setup.py install chdir={{ base_dir }}/sawtooth-validator

@@ -1,0 +1,17 @@
+- pip: name=cbor
+- pip: name=pybitcointools
+- pip: name=colorlog
+- pip: name=coverage
+- pip: name=nose2
+- pip: name=cov-core
+- pip: name=pylint
+- pip: name=setuptools
+- pip: name=setuptools-lint
+- pip: name=pep8
+- pip: name=networkx
+- pip: name=daemonize
+- pip: name=psutil
+- pip: name=demjson
+- pip: name=service_identity
+- pip: name=pyaml
+- pip: name=requests

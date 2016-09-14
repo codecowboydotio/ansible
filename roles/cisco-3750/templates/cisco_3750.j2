@@ -1,0 +1,5 @@
+{% for interface in cisco_interfaces %}
+interface {{interface}}
+ switchport access vlan 10
+ switchport mode access
+{% endfor %}
