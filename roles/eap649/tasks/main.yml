@@ -48,7 +48,7 @@
 - name: Restart application server
   systemd:
     name: jboss-as-standalone
-    state: reloaded
+    state: restarted
 - name: Wait for JBoss to start up
   wait_for:
     port: 9990
