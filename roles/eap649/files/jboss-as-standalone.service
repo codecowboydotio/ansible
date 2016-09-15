@@ -1,0 +1,15 @@
+[Unit]
+Description=Jboss Application Server
+After=network.target
+
+[Service]
+Type=idle
+Environment=JBOSS_HOME=/opt/eap649/jboss-eap-6.4/ JBOSS_LOG_DIR=/var/log/jboss "JAVA_OPTS=-Xms1024m -Xmx20480m -XX:MaxPermSize=768m"
+User=root
+Group=root
+ExecStart=/opt/eap649/jboss-eap-6.4/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+TimeoutStartSec=600
+TimeoutStopSec=600
+
+[Install]
+WantedBy=multi-user.target

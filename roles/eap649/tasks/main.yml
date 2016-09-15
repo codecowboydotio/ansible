@@ -1,0 +1,55 @@
+- include: yum_package.yml
+- name: Turn off firewalld
+  systemd:
+    name: firewalld
+    state: stopped 
+- copy: 
+    src: files/jboss-eap-6.4.0.zip
+    dest: /opt/eap649/
+    owner: root
+    group: root
+    mode: 0644
+- name: unzip EAP
+  shell: unzip -o jboss-eap-6.4.0.zip chdir=/opt/eap649/
+- name: Add management user
+  shell: /opt/eap649/jboss-eap-6.4/bin/add-user.sh admin Password123# --silent
+- name: copy startup file to server
+  copy: 
+    src: files/start.sh
+    dest: /root/start.sh
+    owner: root
+    group: root
+    mode: 0755
+- name: copy systemd file in to place
+  copy:
+    src: files/jboss-as-standalone.service
+    dest: /etc/systemd/system/jboss-as-standalone.service
+    owner: root
+    group: root
+    mode: 0644
+- name: Systemd reload
+  systemd: 
+    daemon_reload: yes
+    name: jboss-as-standalone.service
+    enabled: yes
+    state: started
+- name: Wait for JBoss to start up
+  wait_for: 
+    port: 9990
+- name: Copy patch for 6.4.9
+  copy:
+    src: files/jboss-eap-6.4.9-patch.zip
+    dest: /opt/eap649/
+    owner: root
+    group: root
+    mode: 0644
+- name: Apply patch for 6.4.9
+  shell: /opt/eap649/jboss-eap-6.4/bin/jboss-cli.sh -c --command="patch apply /opt/eap649/jboss-eap-6.4.9-patch.zip"
+- name: Restart application server
+  systemd:
+    name: jboss-as-standalone
+    state: reloaded
+- name: Wait for JBoss to start up
+  wait_for:
+    port: 9990
+
