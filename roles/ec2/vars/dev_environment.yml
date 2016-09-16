@@ -34,7 +34,7 @@ ec2_instances:
     image: "{{ image_id }}"
     assign_public_ip: true
     keypair: "{{instances_keypair}}"
-    group: ['web']
+    group: ['ssh']
     instance_tags: 
         Name: dev_jumphost
     exact_count: 1

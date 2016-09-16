@@ -6,7 +6,7 @@
   vars_files:
     - vars/dev_environment.yml
     - vars/aws_creds.yml
-
+  user: ec2-user
   tasks:
 
   - name: Create required security groups
