@@ -1,0 +1,27 @@
+- name: Turn off firewalld
+  systemd:
+    name: firewalld
+    state: stopped 
+- name: copy startup file to server
+  copy: 
+    src: files/start.sh
+    dest: /root/start.sh
+    owner: root
+    group: root
+    mode: 0755
+- name: copy systemd file in to place
+  copy:
+    src: files/jboss-as-standalone.service
+    dest: /etc/systemd/system/jboss-as-standalone.service
+    owner: root
+    group: root
+    mode: 0644
+- name: Systemd reload
+  systemd: 
+    daemon_reload: yes
+    name: jboss-as-standalone.service
+    enabled: yes
+    state: started
+- name: Wait for JBoss to start up
+  wait_for: 
+    port: 9990

@@ -1,0 +1,16 @@
+- copy: 
+    src: files/{{ zipfile }}
+    dest: "{{ dest_dir }}"
+    owner: root
+    group: root
+    mode: 0644
+- name: unzip EAP
+  shell: unzip -o {{ zipfile }} chdir={{ dest_dir }}
+- name: Add management user
+  vars:
+   env:
+    DEST_DIR: "{{ dest_dir }}"
+    JBOSS_ADMIN_USER: "{{ jboss_admin_username }}"
+    JBOSS_ADMIN_PASSWORD: "{{ jboss_admin_password }}"
+  environment: "{{ env }}"
+  shell: $DEST_DIR/jboss-eap-7.0/bin/add-user.sh $JBOSS_ADMIN_USER $JBOSS_ADMIN_PASSWORD --silent
