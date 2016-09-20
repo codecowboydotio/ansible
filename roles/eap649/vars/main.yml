@@ -1,0 +1,4 @@
+dest_dir: /opt/eap649/
+zipfile: jboss-eap-6.4.0.zip
+jboss_admin_username: admin
+jboss_admin_password: Password123# 
