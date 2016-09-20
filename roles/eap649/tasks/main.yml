@@ -5,14 +5,20 @@
     state: stopped 
 - copy: 
     src: files/jboss-eap-6.4.0.zip
-    dest: /opt/eap649/
+    dest: "{{ dest_dir }}"
     owner: root
     group: root
     mode: 0644
 - name: unzip EAP
-  shell: unzip -o jboss-eap-6.4.0.zip chdir=/opt/eap649/
+  shell: unzip -o jboss-eap-6.4.0.zip chdir={{ dest_dir }}
 - name: Add management user
-  shell: /opt/eap649/jboss-eap-6.4/bin/add-user.sh admin Password123# --silent
+  vars:
+   env:
+    DEST_DIR: "{{ dest_dir }}"
+    JBOSS_ADMIN_USER: "{{ jboss_admin_username }}"
+    JBOSS_ADMIN_PASSWORD: "{{ jboss_admin_password }}"
+  environment: "{{ env }}"
+  shell: $DEST_DIR/jboss-eap-6.4/bin/add-user.sh $JBOSS_ADMIN_USER $JBOSS_ADMIN_PASSWORD --silent
 - name: copy startup file to server
   copy: 
     src: files/start.sh
