@@ -1,5 +1,5 @@
 - copy: 
-    src: files/{{ zipfile }}
+    src: "{{ zipfile }}"
     dest: "{{ dest_dir }}"
     owner: root
     group: root

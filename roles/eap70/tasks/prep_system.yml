@@ -9,14 +9,14 @@
   when: firewalld_status == "active"
 - name: copy startup file to server
   copy: 
-    src: files/start.sh
+    src: start.sh
     dest: /root/start.sh
     owner: root
     group: root
     mode: 0755
 - name: copy systemd file in to place
   copy:
-    src: files/jboss-as-standalone.service
+    src: jboss-as-standalone.service
     dest: /etc/systemd/system/jboss-as-standalone.service
     owner: root
     group: root
