@@ -1,4 +1,4 @@
-- hosts: "{{ ansible_hosts | default('eap-hosts') }}"
+- hosts: "{{ target_hosts | default('eap-hosts') }}"
   become: yes
   become_user: root
   roles: 
