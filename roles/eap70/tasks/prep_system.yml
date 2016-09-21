@@ -6,7 +6,7 @@
   systemd:
     name: firewalld
     state: stopped
-  when: firewalld_status == "active"
+  when: firewalld_status.stdout == "active"
 - name: copy startup file to server
   copy: 
     src: start.sh
