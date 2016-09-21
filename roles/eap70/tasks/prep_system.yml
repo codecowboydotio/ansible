@@ -1,7 +1,12 @@
+- name: Check firewalld status
+  shell: systemctl is-active firewalld
+  register: firewalld_status
+  ignore_errors: true
 - name: Turn off firewalld
   systemd:
     name: firewalld
-    state: stopped 
+    state: stopped
+  when: firewalld_status == "active"
 - name: copy startup file to server
   copy: 
     src: files/start.sh

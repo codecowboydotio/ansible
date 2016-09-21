@@ -23,6 +23,10 @@ security_groups:
         from_port: "443"
         to_port: "443"
         cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: "9990"
+        to_port: "9990"
+        cidr_ip: 0.0.0.0/0
   
 # Instances to launch be launched.
 # If you re-run the playbook after modifying exact_count,
