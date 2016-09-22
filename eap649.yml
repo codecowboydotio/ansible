@@ -1,3 +1,3 @@
-- hosts: blank-rhel
+- hosts: "{{ target_hosts | default('eap-hosts') }}"
   roles: 
    - eap649

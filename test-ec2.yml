@@ -1,0 +1,25 @@
+- name: Provision ec2 instances based on the environment
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars_files:
+    - roles/ec2/vars/aws_creds.yml
+
+  tasks:
+  - name: Provision simple instance
+    ec2:
+      ec2_access_key: "{{ ec2_access_key }}"
+      ec2_secret_key: "{{ ec2_secret_key }}"
+      region: ap-southeast-2
+      key_name: aws_keys
+      group: default
+      instance_type: t2.micro
+      image: ami-e0c19f83
+      wait: true
+      exact_count: 2
+      count_tag:
+        Name: Demo
+      instance_tags:
+        Name: Demo
+    register: ec2
