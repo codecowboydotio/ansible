@@ -1,3 +1,5 @@
-- hosts: linux
+- hosts: "{{ target_hosts | default('null-hosts') }}"
+  become: yes
+  become_user: root
   roles: 
    - sawtooth

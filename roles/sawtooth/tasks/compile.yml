@@ -5,9 +5,9 @@
 - name: compile swig source
   shell: make chdir={{ base_dir }}/swig
 - name: compile sawtooth core
-  shell: python setup.py build chdir={{ base_dir }}/sawtooth-core
+  shell: python setup.py build chdir={{ base_dir }}/sawtooth-core/core
 - name: compile sawtooth core
-  shell: python setup.py install chdir={{ base_dir }}/sawtooth-core
+  shell: python setup.py install chdir={{ base_dir }}/sawtooth-core/core/
 - name: compile sawtooth marketplace
   shell: python setup.py build chdir={{ base_dir }}/sawtooth-mktplace
 - name: compile sawtooth marketplace
