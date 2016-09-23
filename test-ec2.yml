@@ -23,3 +23,7 @@
       instance_tags:
         Name: Demo
     register: ec2
+  - name: Wait for machines to come up completely
+    pause: 
+      seconds: 60
+

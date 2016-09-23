@@ -9,4 +9,5 @@
       password: password
       force_basic_auth: yes
       status_code: 201
+    delegate_to: 127.0.0.1
 
