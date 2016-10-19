@@ -24,4 +24,12 @@ and builds them all on the one box.
 
 It is intended for testing, where you want to test OUTSIDE of the vagrant ubuntu images that are supplied.
 
+#eap70:
+
+This role installs a version of JBoss EAP 7.0 (wildfly) and sets a password.
+
+#eap649:
+
+This role installs a version of JBoss EAP 649 and patches. It is suitable for use with JBoss BPM suite (or other applications)
+
 
