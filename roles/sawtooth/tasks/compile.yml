@@ -4,15 +4,15 @@
   shell: ./configure chdir={{ base_dir }}/swig 
 - name: compile swig source
   shell: make chdir={{ base_dir }}/swig
-- name: compile sawtooth core
+- name: compile sawtooth core BUILD 
   shell: python setup.py build chdir={{ base_dir }}/sawtooth-core/core
-- name: compile sawtooth core
+- name: compile sawtooth core INSTALL
   shell: python setup.py install chdir={{ base_dir }}/sawtooth-core/core/
-- name: compile sawtooth marketplace
+- name: compile sawtooth marketplace BUILD
   shell: python setup.py build chdir={{ base_dir }}/sawtooth-mktplace
-- name: compile sawtooth marketplace
+- name: compile sawtooth marketplace INSTALL
   shell: python setup.py install chdir={{ base_dir }}/sawtooth-mktplace
-- name: compile sawtooth validator
+- name: compile sawtooth validator BUILD
   shell: python setup.py build chdir={{ base_dir }}/sawtooth-validator
-- name: compile sawtooth validator
+- name: compile sawtooth validator INSTALL
   shell: python setup.py install chdir={{ base_dir }}/sawtooth-validator

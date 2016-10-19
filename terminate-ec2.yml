@@ -1,5 +1,5 @@
 - name: Provision ec2 instances based on the environment
-  hosts: localhost
+  hosts: "{{ target_hosts | default('eap-hosts') }}"
   connection: local
   gather_facts: True
 
