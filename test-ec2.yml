@@ -24,6 +24,5 @@
         Name: Demo
     register: ec2
   - name: Wait for machines to come up completely
-    pause: 
-      seconds: 30
-
+    wait_for: host={{ item.public_dns_name }} port=22
+    with_items: '{{ec2.instances}}'
