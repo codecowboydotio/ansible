@@ -1,0 +1,6 @@
+- name: Pull bitcoin code from github to {{ new_dir }}
+  git:
+    repo: git://github.com/zcash/zcash.git
+    dest: "{{ new_dir }}"
+    version: "{{ zcash_version }}"
+    clone: yes

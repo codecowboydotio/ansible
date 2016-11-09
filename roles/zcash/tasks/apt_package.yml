@@ -1,0 +1,57 @@
+- name: Install Development Tools
+  apt:
+    name: build-essential
+    state: present
+- name: Install boost libraries
+  apt:
+    name: libboost-all-dev
+    state: present
+- name: Install openssl libraries
+  apt:
+    name: libssl-dev
+    state: present
+- name: Install libevent libraries
+  apt:
+    name: libevent-dev
+    state: present
+- name: Install autoconf 
+  apt:
+    name: autoconf
+    state: present
+- name: Install libprotobuf-dev
+  apt:
+    name: libprotobuf-dev
+    state: present
+- name: Install protobuf-compiler
+  apt:
+    name: protobuf-compiler
+    state: present
+- name: Install libqt4-dev
+  apt:
+    name: libqt4-dev
+    state: present
+- name: Install libqrencode-dev
+  apt:
+    name: libqrencode-dev
+    state: present
+- name: Install libtool
+  apt:
+    name: libtool
+    state: present
+- name: Install automake
+  apt:
+    name: automake
+    state: present
+- name: Install pkg-config
+  apt:
+    name: pkg-config
+    state: present
+- name: Install git
+  apt:
+    name: git
+    state: present
+- name: Install libgmp headers
+  apt:
+    name: libgmp-dev
+    state: present
+

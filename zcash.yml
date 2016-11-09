@@ -2,4 +2,4 @@
   tasks:
     - name: include role example
       include_role:
-       name: bitcoin
+       name: zcash

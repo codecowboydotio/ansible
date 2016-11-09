@@ -1,0 +1,4 @@
+- name: clean up old one
+  file:
+    name: "{{ new_dir }}"
+    state: absent

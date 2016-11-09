@@ -1,0 +1,10 @@
+- name: BDB download BDB 4.8.30
+  get_url: url="http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz" dest={{ new_dir }}
+- name: BDB unarchive tar file
+  unarchive: src={{ new_dir }}/db-4.8.30.NC.tar.gz dest={{ new_dir }} copy=no
+- name: BDB Make build directory
+  file: path={{ new_dir }}/{{ bdb_dir }}/build  state=directory
+- name: BDB Configure
+  shell: ../dist/configure --disable-shared --enable-cxx --with-pic --prefix={{new_dir}}/{{ bdb_dir }}/build_unix chdir={{ new_dir }}/{{ bdb_dir }}/build
+- name: BDB Make bdb
+  shell: make install chdir={{ new_dir }}/{{ bdb_dir }}/build

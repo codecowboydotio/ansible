@@ -1,3 +1,6 @@
 - hosts: "{{ target_hosts | default('eap-hosts') }}"
-  roles: 
-   - eap649
+  tasks:
+    - name: install eap649
+      include_role:
+       name: eap649
+

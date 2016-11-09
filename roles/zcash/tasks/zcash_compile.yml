@@ -1,0 +1,4 @@
+- name: fetch params
+  shell: "{{ new_dir }}/zcutil/fetch-params.sh"
+- name: build zcash
+  shell: "{{ new_dir }}/zcutil/build.sh"
