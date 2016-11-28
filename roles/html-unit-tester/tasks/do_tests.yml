@@ -1,0 +1,16 @@
+- name: Remove any old dest directory before git pull
+  file:
+    name: "{{ repo_dest }}"
+    state: absent
+- name: git pull latest html test suite
+  git: 
+    repo: "{{ repo_name }}"
+    dest: "{{ repo_dest }}"
+- name: do build
+  shell: "{{ repo_dest }}/build.sh"    
+  args:
+    chdir: "{{ repo_dest }}"
+- name: run unit tests
+  shell: java -cp .:./htmlunit-2.23/lib/* test 
+  args:
+    chdir: "{{ repo_dest }}"
