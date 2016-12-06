@@ -5,7 +5,7 @@
   - name: Spin up a container
     docker_container:
      name: "container{{ item }}"
-     image: scottorama1/eap7
+     image: listener
      state: started
     with_sequence: count=2
   - name: get container IP
