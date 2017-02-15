@@ -1,0 +1,20 @@
+- hosts: "{{ target_hosts | default('null-hosts') }}"
+  vars: 
+   the_password: qwerty123
+  tasks:
+   - name: add a group
+     group:
+       name: testgroup
+       state: present
+   - name: generate variable
+     shell: python -c 'import crypt; print crypt.crypt("{{the_password}}", "$1$SomeSalt$")'
+     register: client_pass
+   - debug: var=client_pass.stdout
+   - name: add a user
+     user:
+       name: fooble
+       group: testgroup
+       home: /home/fooble
+       createhome: yes
+       update_password: on_create
+       password: "{{client_pass.stdout}}"
