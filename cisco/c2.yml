@@ -1,0 +1,13 @@
+- hosts: cisco
+  connection: local
+  vars:
+    credentials:
+      host: "{{ inventory_hostname }}"
+      username: cisco
+      password: cisco
+  tasks:
+    - name: test IOS Command
+      register: command_out
+      ios_command:
+        commands: "show version"
+        provider: "{{ credentials }}"

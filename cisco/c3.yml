@@ -1,0 +1,11 @@
+- hosts: cisco
+  connection: local
+
+  tasks:
+    - ios_facts:
+        host: "{{ inventory_hostname }}"
+        username: admin
+        password: admin
+      register: output
+      
+    - debug: var=output

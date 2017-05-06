@@ -5,14 +5,14 @@
   tasks:
   - name: define provider
     set_fact:
-      provider:
+      creds:
         username: admin
         password: admin
 
   - name: run commands
     ios_command:
        host: "{{ inventory_hostname }}"
-       provider: "{{ provider }}"
+       provider: "{{ creds }}"
        commands:
         - show version
     register: version
@@ -21,6 +21,6 @@
   - name: ios_config
     ios_config: 
        host: "{{ inventory_hostname }}"
-       provider: "{{ provider }}"
+       provider: "{{ creds }}"
        lines: 
          - hostname foo
