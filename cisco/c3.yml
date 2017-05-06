@@ -1,5 +1,4 @@
 - hosts: cisco
-  connection: local
 
   tasks:
     - ios_facts:
