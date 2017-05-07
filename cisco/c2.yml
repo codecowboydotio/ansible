@@ -1,8 +1,8 @@
-- hosts: localhost
+- hosts: cisco
   connection: local
   vars:
     credentials:
-      host: 192.168.100.108
+      host: "{{ inventory_hostname }}"
       username: cisco
       password: cisco
   tasks:
