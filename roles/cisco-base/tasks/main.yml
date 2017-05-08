@@ -1,5 +1,5 @@
 - name: load static base template
-  ios_config
+  ios_config:
     host: "{{ inventory_hostname }}"
     provider: "{{ credentials }}"
     src: files/cisco_base.txt
