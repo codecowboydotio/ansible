@@ -1,0 +1,10 @@
+- hosts: "{{ target_hosts | default('null-hosts') }}"
+  connection: local
+  vars:
+    credentials:
+      host: "{{ inventory_hostname }}"
+      username: cisco
+      password: cisco
+
+  roles: 
+   - cisco-base
