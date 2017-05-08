@@ -7,7 +7,9 @@
       password: cisco
   tasks:
     - name: test IOS Command
-      register: command_out
       ios_command:
         commands: "show version"
         provider: "{{ credentials }}"
+      register: version
+    - debug: var=version.stdout_lines
+
