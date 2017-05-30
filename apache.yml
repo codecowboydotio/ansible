@@ -1,0 +1,5 @@
+- hosts: "{{ target_hosts | default('null-hosts') }}"
+  tasks:
+    - name: include role example
+      include_role:
+       name: apache

@@ -1,0 +1,4 @@
+- include: yum_package.yml
+  when: ansible_pkg_mgr == 'yum'
+- include: apt_package.yml
+  when: ansible_pkg_mgr == 'apt'
