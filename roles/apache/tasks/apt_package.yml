@@ -2,3 +2,7 @@
   apt:
     name: apache2
     state: present
+- name: Install wget
+  apt:
+    name: wget
+    state: present

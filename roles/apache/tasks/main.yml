@@ -2,3 +2,7 @@
   when: ansible_pkg_mgr == 'yum'
 - include: apt_package.yml
   when: ansible_pkg_mgr == 'apt'
+- name: Install dumb-init
+  shell: wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64
+- name: Change permission on dumb-init
+  shell: chmod +x /usr/local/bin/dumb-init
