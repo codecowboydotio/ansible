@@ -1,0 +1,26 @@
+- hosts: "{{ target_hosts | default('localhost') }}"
+  tasks:
+  - name: Add tower project
+    tower_project:
+      name: "ansible-playbooks"
+      description: "General Project that contains all playbooks"
+      organization: "Default"
+      scm_type: git
+      scm_url: "https://github.com/svkdotcloud/ansible"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Add tower project devops day
+    tower_project:
+      name: "devops-day"
+      description: "Devops day ansible playsbooks - figlet"
+      organization: "Default"
+      scm_type: git
+      scm_url: "https://github.com/svkdotcloud/devops-day"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Remove Demo project
+    tower_project:
+      name: "Demo Project"
+      organization: "Default"
+      state: absent
+      tower_config_file: "~/.tower_cli.cfg"
