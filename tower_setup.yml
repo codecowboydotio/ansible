@@ -1,5 +1,13 @@
 - hosts: "{{ target_hosts | default('localhost') }}"
   tasks:
+  - name: Add Tower root credential
+    tower_credential:
+      name: root-ssh
+      description: "Root ssh cred"
+      organization: "Default"
+      kind: ssh
+      ssh_key_data: /root/.ssh/id_rsa
+      state: present
   - name: Add tower project
     tower_project:
       name: "ansible-playbooks"
@@ -23,4 +31,33 @@
       name: "Demo Project"
       organization: "Default"
       state: absent
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Create Inventories
+    tower_inventory:
+      name: "rhel_boxes"
+      organization: "Default"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Create Hosts in inventory
+    tower_host:
+      name: blank-rhel
+      inventory: "rhel_boxes"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Create Hosts in inventory
+    tower_host:
+      name: blank-rhel-2
+      inventory: "rhel_boxes"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Figlet-4 job template
+    tower_job_template:
+      name: "Figlet-4"
+      job_type: run
+      inventory: rhel_boxes
+      project: devops-day
+      playbook: figlet-4.yml
+      machine_credential: root-ssh
+      ask_extra_vars: on
+      state: present
       tower_config_file: "~/.tower_cli.cfg"
