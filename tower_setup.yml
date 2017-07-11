@@ -32,6 +32,12 @@
       organization: "Default"
       state: absent
       tower_config_file: "~/.tower_cli.cfg"
+  - name: Remove Demo Inventory
+    tower_inventory:
+      name: "Demo Inventory"
+      organization: "Default"
+      state: absent
+      tower_config_file: "~/.tower_cli.cfg"
   - name: Create Inventories
     tower_inventory:
       name: "rhel_boxes"
@@ -50,6 +56,18 @@
       inventory: "rhel_boxes"
       state: present
       tower_config_file: "~/.tower_cli.cfg"
+  - name: Create Inventory blockchain
+    tower_inventory:
+      name: "blockchain"
+      organization: "Default"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Create Host in Blockchain inventory
+    tower_host:
+      name: blockchain
+      inventory: "blockchain"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
   - name: Figlet-4 job template
     tower_job_template:
       name: "Figlet-4"
@@ -58,6 +76,17 @@
       project: devops-day
       playbook: figlet-4.yml
       machine_credential: root-ssh
-      ask_extra_vars: on
+      #ask_extra_vars: on
+      state: present
+      #extra_vars_path: "/home/svankalk/Desktop/dev/ansible"
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: zcash job template
+    tower_job_template:
+      name: "Zcash"
+      job_type: run
+      inventory: blockchain
+      project: ansible-playbooks
+      playbook: zcash.yml
+      machine_credential: root-ssh
       state: present
       tower_config_file: "~/.tower_cli.cfg"
