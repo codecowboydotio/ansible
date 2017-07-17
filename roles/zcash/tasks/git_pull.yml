@@ -1,4 +1,4 @@
-- name: Pull bitcoin code from github to {{ new_dir }}
+- name: Pull zcash code from github to {{ new_dir }}
   git:
     repo: git://github.com/zcash/zcash.git
     dest: "{{ new_dir }}"

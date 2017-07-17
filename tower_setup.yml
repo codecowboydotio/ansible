@@ -8,6 +8,15 @@
       kind: ssh
       ssh_key_data: /root/.ssh/id_rsa
       state: present
+  - name: add AWS cloud credential
+    tower_credential: 
+      name: aws-account
+      description: AWS access key for account
+      organization: "Default"
+      kind: aws
+      username: FIX_ME
+      password: FIX_ME
+      state: present
   - name: Add tower project
     tower_project:
       name: "ansible-playbooks"
@@ -68,6 +77,46 @@
       inventory: "blockchain"
       state: present
       tower_config_file: "~/.tower_cli.cfg"
+  - name: Create Inventory ansible-localhost
+    tower_inventory:
+      name: "ansible-localhost"
+      organization: "Default"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Create Host in ansible-localhost inventory
+    tower_host:
+      name: localhost
+      inventory: "ansible-localhost"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Create Inventory ec2
+    tower_inventory:
+      name: "ec2"
+      organization: "Default"
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Create group ec2
+    tower_group:
+      name: ec2
+      description: ec2 hosts
+      inventory: ec2
+      source: ec2
+      credential: aws-account
+      update_on_launch: yes
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: Figlet-3 job template
+    tower_job_template:
+      name: "Figlet-3"
+      job_type: run
+      inventory: rhel_boxes
+      project: devops-day
+      playbook: figlet-3.yml
+      machine_credential: root-ssh
+      #ask_extra_vars: on
+      state: present
+      #extra_vars_path: "/home/svankalk/Desktop/dev/ansible"
+      tower_config_file: "~/.tower_cli.cfg"
   - name: Figlet-4 job template
     tower_job_template:
       name: "Figlet-4"
@@ -87,6 +136,26 @@
       inventory: blockchain
       project: ansible-playbooks
       playbook: zcash.yml
+      machine_credential: root-ssh
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: aws job template
+    tower_job_template:
+      name: "AWS EC2 instance"
+      job_type: run
+      inventory: ansible-localhost
+      project: ansible-playbooks
+      playbook: test-ec2.yml
+      machine_credential: root-ssh
+      state: present
+      tower_config_file: "~/.tower_cli.cfg"
+  - name: eap70 job template
+    tower_job_template:
+      name: "Install EAP 7.0"
+      job_type: run
+      inventory: ec2
+      project: ansible-playbooks
+      playbook: eap70.yml
       machine_credential: root-ssh
       state: present
       tower_config_file: "~/.tower_cli.cfg"
