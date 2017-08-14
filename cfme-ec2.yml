@@ -44,3 +44,8 @@
         Content-Type: "application/json" 
       status_code: 200
     register: output
+  - name: Set the task href
+      set_fact:
+        task_url: "{{ output.json.task_href}}"
+  - debug:
+      var: output.json.task_href
