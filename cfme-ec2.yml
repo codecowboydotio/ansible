@@ -1,0 +1,40 @@
+- name: Provision ec2 instances based on the environment
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars_files:
+    - roles/ec2/vars/aws_creds.yml
+
+  tasks:
+  - name: Provision simple instance
+    ec2:
+      ec2_access_key: "{{ ec2_access_key }}"
+      ec2_secret_key: "{{ ec2_secret_key }}"
+      region: ap-southeast-2
+      key_name: aws_keys
+      group: default
+      instance_type: t2.micro
+      image: ami-e0c19f83
+      wait: true
+      count: "{{ instance_count }}"
+      count_tag:
+        Name: Demo
+      instance_tags:
+        Name: Demo
+    register: ec2
+  - name: Wait for machines to come up completely
+    wait_for: host={{ item.public_dns_name }} port=22
+    with_items: '{{ec2.instances}}'
+  - name: Print tokens
+    set_fact:
+        provider_url: "{{ manageiq.api_url }}/api/providers/{{ provider_id }}"
+        api_token: "{{ manageiq.api_token }}"
+        service: "{{ manageiq.service }}"
+  - name: Print Tokens
+       - debug: 
+          var: provider_url
+       - debug: 
+          var: api_token
+       - debug:
+          var: service
