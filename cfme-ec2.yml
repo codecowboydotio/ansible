@@ -5,6 +5,8 @@
 
   vars_files:
     - roles/ec2/vars/aws_creds.yml
+  vars: 
+    provider_id: 34
 
   tasks:
   - name: Provision simple instance
@@ -26,11 +28,19 @@
   - name: Wait for machines to come up completely
     wait_for: host={{ item.public_dns_name }} port=22
     with_items: '{{ec2.instances}}'
-  - name: Print tokens
+  - name: Set provider URL
     set_fact:
         provider_url: "{{ manageiq.api_url }}/api/providers/{{ provider_id }}"
-        api_token: "{{ manageiq.api_token }}"
-        service: "{{ manageiq.service }}"
-  - debug: 
-     var: provider_url.stdout_lines
-     #var: service.stdout_lines
+  - name: Refresh Amazon EC2 provider in CloudForms
+    uri:
+      url: "{{ provider_url }}"
+      method: POST
+      body:
+        action: refresh
+      body_format: json
+      validate_certs: False
+      headers:
+        X-Auth-Token: "{{ manageiq.api_token }}"
+        Content-Type: "application/json" 
+      status_code: 200
+    register: output
