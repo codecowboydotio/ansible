@@ -83,9 +83,9 @@
   - name: Set the Service URL
     set_fact:
       svc_url: "/api/{{ manageiq.service }}"
-  - name: Initialize an empty list for vms
-    set_fact:
-      vms: []
+#  - name: Initialize an empty list for vms
+#    set_fact:
+#      vms: []
   - name: Append resource href to vms list
     set_fact:
       vms: "{{ vms }} + [ { 'href': svc_url, 'resource': { 'href': '/api/vms/{{ item.json.resources[0].id }}' } } ]"
