@@ -31,7 +31,6 @@
         provider_url: "{{ manageiq.api_url }}/api/providers/{{ provider_id }}"
         api_token: "{{ manageiq.api_token }}"
         service: "{{ manageiq.service }}"
-  - name: Print Tokens
-       - debug: 
-          var: provider_url.stdout_lines
-          var: service.stdout_lines
+  - debug: 
+     var: provider_url.stdout_lines
+     #var: service.stdout_lines
