@@ -34,7 +34,4 @@
   - name: Print Tokens
        - debug: 
           var: provider_url.stdout_lines
-       - debug: 
-          var: api_token.stdout_lines
-       - debug:
           var: service.stdout_lines
