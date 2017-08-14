@@ -63,3 +63,30 @@
     failed_when: task_result.json.status == 'Error'
     #retries: "{{max_retries}}"
     #delay: "{{retry_interval}}"
+  - name: Lookup instance href
+    uri:
+      url: "{{ manageiq.api_url }}/api/vms?filter[]=name={{ item.id }}&expand=resources"
+      method: GET
+      body:
+        action: refresh
+      body_format: json
+      validate_certs: False
+      headers:
+        X-Auth-Token: "{{ manageiq.api_token }}"
+        Content-Type: "application/json"
+      status_code: 200
+    register: output
+    with_items: 
+      - "{{ ec2.instances }}"
+   - name: Set the Service URL
+     set_fact:
+       svc_url: "/api/{{ manageiq.service }}"
+    - name: Initialize an empty list for vms
+      set_fact:
+        vms: []
+    - name: Append resource href to vms list
+      set_fact:
+        vms: "{{ vms }} + [ { 'href': svc_url, 'resource': { 'href': '/api/vms/{{ item.json.resources[0].id }}' } } ]"
+      with_items: "{{ output.results }}"
+    - debug: 
+        var: vms
