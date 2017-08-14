@@ -61,5 +61,5 @@
     register: task_result
     until: task_result.json.state == 'Finished' or task_result.json.status == 'Error'
     failed_when: task_result.json.status == 'Error'
-    retries: "{{max_retries}}"
-    delay: "{{retry_interval}}"
+    #retries: "{{max_retries}}"
+    #delay: "{{retry_interval}}"
