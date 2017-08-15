@@ -28,55 +28,55 @@
   - name: Wait for machines to come up completely
     wait_for: host={{ item.public_dns_name }} port=22
     with_items: '{{ec2.instances}}'
-  - name: Set provider URL
-    set_fact:
-        provider_url: "{{ manageiq.api_url }}/api/providers/{{ provider_id }}"
-  - name: Refresh Amazon EC2 provider in CloudForms
-    uri:
-      url: "{{ provider_url }}"
-      method: POST
-      body:
-        action: refresh
-      body_format: json
-      validate_certs: False
-      headers:
-        X-Auth-Token: "{{ manageiq.api_token }}"
-        Content-Type: "application/json" 
-      status_code: 200
-    register: output
-  - name: Set the task href
-    set_fact:
-      task_url: "{{ output.json.task_href}}"
-  - debug:
-      var: output.json.task_href
-  - name: Wait for the provider refresh to end
-    uri:
-      url: "{{ task_url }}"
-      method: GET
-      validate_certs: False
-      headers:
-        X-Auth-Token: "{{ manageiq.api_token }}"
-        Content-Type: "application/json" 
-      status_code: 200
-    register: task_result
-    until: task_result.json.state == 'Finished' or task_result.json.status == 'Error'
-    failed_when: task_result.json.status == 'Error'
-    #retries: "{{max_retries}}"
-    #delay: "{{retry_interval}}"
-  - name: Lookup instance href
-    uri:
-      url: "{{ manageiq.api_url }}/api/vms?filter[]=name={{ item.id }}&expand=resources"
-      method: GET
-      body:
-        action: refresh
-      body_format: json
-      validate_certs: False
-      headers:
-        X-Auth-Token: "{{ manageiq.api_token }}"
-        Content-Type: "application/json"
-      status_code: 200
-    register: output
-    with_items: 
-      - "{{ ec2.instances }}"
-  - debug:
-      var: output.results
+#  - name: Set provider URL
+#    set_fact:
+#        provider_url: "{{ manageiq.api_url }}/api/providers/{{ provider_id }}"
+#  - name: Refresh Amazon EC2 provider in CloudForms
+#    uri:
+#      url: "{{ provider_url }}"
+#      method: POST
+#      body:
+#        action: refresh
+#      body_format: json
+#      validate_certs: False
+#      headers:
+#        X-Auth-Token: "{{ manageiq.api_token }}"
+#        Content-Type: "application/json" 
+#      status_code: 200
+#    register: output
+#  - name: Set the task href
+#    set_fact:
+#      task_url: "{{ output.json.task_href}}"
+#  - debug:
+#      var: output.json.task_href
+#  - name: Wait for the provider refresh to end
+#    uri:
+#      url: "{{ task_url }}"
+#      method: GET
+#      validate_certs: False
+#      headers:
+#        X-Auth-Token: "{{ manageiq.api_token }}"
+#        Content-Type: "application/json" 
+#      status_code: 200
+#    register: task_result
+#    until: task_result.json.state == 'Finished' or task_result.json.status == 'Error'
+#    failed_when: task_result.json.status == 'Error'
+#    #retries: "{{max_retries}}"
+#    #delay: "{{retry_interval}}"
+#  - name: Lookup instance href
+#    uri:
+#      url: "{{ manageiq.api_url }}/api/vms?filter[]=name={{ item.id }}&expand=resources"
+#      method: GET
+#      body:
+#        action: refresh
+#      body_format: json
+#      validate_certs: False
+#      headers:
+#        X-Auth-Token: "{{ manageiq.api_token }}"
+#        Content-Type: "application/json"
+#      status_code: 200
+#    register: output
+#    with_items: 
+#      - "{{ ec2.instances }}"
+#  - debug:
+#      var: output.results
