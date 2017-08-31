@@ -1,8 +1,8 @@
 - name: Install unzip
-  yum:
+  package:
     name: unzip
     state: present
 - name: Install java
-  yum:
+  package:
     name: java-1.8.0-openjdk-devel
     state: present

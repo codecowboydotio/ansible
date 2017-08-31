@@ -1,0 +1,24 @@
+- hosts: "{{ target_hosts | default('null-hosts') }}"
+  connection: local
+  vars:
+    device_info:
+      host: "{{ inventory_hostname }}"
+      username: admin
+      password: password
+      authorize: yes
+      auth_pass: password
+  tasks: 
+    - name: create object group INSIDE-SERVERS
+      asa_config:
+        lines:
+          - network-object host 1.1.1.1
+        parents: ['object-group network INSIDE-SERVERS']
+        provider: "{{ device_info }}"
+      register: result
+    - debug: var=result
+    - name: create object group OUTSIDE-NETWORKS
+      asa_config:
+        lines:
+          - network-object host 1.1.1.1
+        parents: ['object-group network INSIDE-SERVERS']
+        provider: "{{ device_info }}"
