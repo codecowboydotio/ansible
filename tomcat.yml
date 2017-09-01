@@ -33,5 +33,5 @@
       systemd:
         name: tomcat
         state: started
-    - name: foo
-      shell: echo foo
+#    - name: foo
+#      shell: echo foo
