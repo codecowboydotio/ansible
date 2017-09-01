@@ -33,4 +33,5 @@
       systemd:
         name: tomcat
         state: started
+    - name: foo
 
