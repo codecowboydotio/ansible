@@ -1,4 +1,4 @@
 - name: Install git
-  yum:
+  package:
     name: git
     state: present
