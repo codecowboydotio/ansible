@@ -8,17 +8,18 @@
       authorize: yes
       auth_pass: password
   tasks: 
-    - name: create object group INSIDE-SERVERS
+    - name: create object group
       asa_config:
         lines:
-          - network-object host 1.1.1.1
-        parents: ['object-group network INSIDE-SERVERS']
+          - range 192.168.100.0 192.168.100.255
+        parents: ['object network inside-net']
         provider: "{{ device_info }}"
       register: result
     - debug: var=result
-    - name: create object group OUTSIDE-NETWORKS
-      asa_config:
-        lines:
-          - network-object host 1.1.1.1
-        parents: ['object-group network INSIDE-SERVERS']
+    - name: add ACL on outside interface
+      asa_acl:
+        lines: 
+          - access-list outside-in extended permit ip any object inside-net
+
         provider: "{{ device_info }}"
+
