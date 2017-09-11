@@ -1,0 +1,21 @@
+- hosts: "csr1000v"
+  connection: local
+  vars:
+    device_info:
+      host: "{{ inventory_hostname }}"
+      username: codecowboy
+      password: Codecowboy12
+     # authorize: yes
+      #auth_pass: password
+      transport: cli
+      timeout: 30
+  tasks: 
+    - name: Bring up secondary interface
+      ios_config:
+        parents: "interface GigabitEthernet2"
+        lines: 
+          - no shutdown
+          - ip address dhcp
+        provider: "{{ device_info }}"
+      register: result
+#    - debug: var=result
