@@ -14,8 +14,23 @@
       ios_config:
         parents: "interface GigabitEthernet2"
         lines: 
-          - no shutdown
-          - ip address dhcp
+          - shutdown
+          - no ip address
         provider: "{{ device_info }}"
       register: result
 #    - debug: var=result
+    - name: configure the login banner
+      ios_banner:
+        banner: login
+        text: |
+         ------------------------------------------
+         This banner was set by Ansible
+         ....tell me this doesn't remove drudgery
+         ------------------------------------------
+        state: present
+        provider: "{{ device_info }}"
+#    - name: configure the login banner
+#      ios_banner:
+#        banner: login
+#        state: absent
+#        provider: "{{ device_info }}"
