@@ -3,7 +3,7 @@
 This is a place for me to put my ansible scripts.
 I'm slowly converting everything to be role based rather than monolithic script based.
 
-#Bitcoin role:
+# Bitcoin role:
 
 This role pulls bitcoin from github, compiles the source.
 It chooses the OS that it compiles on (at this point it understands yum and apt).
