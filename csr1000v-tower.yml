@@ -9,6 +9,7 @@
       #auth_pass: password
       #transport: cli
       timeout: 60
+#    interface_up: "{{ interface_up }}"
   tasks: 
     - name: Bring up secondary interface
       ios_config:
@@ -17,8 +18,7 @@
           - no shutdown
           - ip address dhcp
         provider: "{{ device_info }}"
-      register: result
-#    - debug: var=result
+      when: interface_up == 'true'
     - name: configure the login banner
       ios_banner:
         banner: login
