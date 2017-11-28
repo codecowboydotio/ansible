@@ -1,0 +1,23 @@
+- hosts: "{{ target_hosts | default('localhost') }}"
+  vars:
+    - new_dir: /foo
+  become: yes
+  become_user: root
+  tasks:
+    - name: pull the container image
+      package: 
+        name: git
+      state: present
+    - name: run the image
+      docker_container:
+        name: "sql-server"
+        image: microsoft/mssql-server-linux:2017-latest
+        ports:
+          - 1401:1433
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "Password123"
+        state: started
+
+#docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Password123" -p 1401:1433 --name sql1 -d microsoft/mssql-server-linux:2017-latest
+
