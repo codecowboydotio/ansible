@@ -1,0 +1,18 @@
+- hosts: localhost ansible_connection=local
+  vars:
+    complex_var:
+      element1: "testing"
+      element2: "still testing"
+      element3:
+        - "array1"
+        - "array2"
+    new_elem_val: "new value"
+    new_array_val: "new array"
+  tasks:
+  - debug: var=complex_var
+  - set_fact:
+      complex_var: "{{ complex_var|combine({'element2':new_elem_val}, recursive=True) }}"
+  - debug: var=complex_var
+  - set_fact:
+      complex_var: "{{ complex_var|combine({'element3'[0]:new_array_val}, recursive=True) }}"
+  - debug: var=complex_var

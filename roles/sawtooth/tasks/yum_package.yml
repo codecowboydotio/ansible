@@ -1,52 +1,60 @@
 - name: Install Development Tools
-  yum:
+  package:
     name: "@Development Tools"
     state: present
 - name: Install Python setuptools
-  yum:
+  package:
     name: python-setuptools
     state: present
 - name: Install PIP
-  yum:
+  package:
     name: python-pip
     state: present
 - name: Install twisted
-  yum:
+  package:
     name: python-twisted-web
     state: present
 - name: Install python-devel
-  yum:
+  package:
     name: python-devel
     state: present
 - name: Install python-enum
-  yum:
+  package:
     name: python-enum
     state: present
 - name: Install gcc-c++
-  yum:
+  package:
     name: gcc-c++
     state: present
 - name: Install json-c-devel
-  yum:
+  package:
     name: json-c-devel
     state: present
 - name: Install cryptopp-devel
-  yum:
+  package:
     name: cryptopp-devel
     state: present
 - name: Install git
-  yum:
+  package:
     name: git
     state: present
 - name: Install pcre
-  yum:
+  package:
     name: pcre-devel
     state: present
 - name: Install libffi
-  yum:
+  package:
     name: libffi-devel
     state: present
 - name: Install openssl-devel
-  yum:
+  package:
     name: openssl-devel
+    state: present
+- name: Install automake (aclocal)
+  package:
+    name: automake
+    state: present
+- name: Install byacc
+  package:
+    name: byacc
     state: present
