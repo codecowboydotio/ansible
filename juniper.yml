@@ -1,0 +1,30 @@
+- name: Apply ACL Junos
+  hosts: juniper
+  connection: local
+  vars:
+    device_info:
+      host: "{{ inventory_hostname }}"
+      username: jnpr
+      password: Automates
+  tasks:
+#  - name: Configure interface
+#    junos_config:
+#      lines:
+#        - edit interfaces lo0.55
+#        - set family inet address 192.168.5.1/32
+#      provider: "{{ device_info }}"
+  - name: ADD ACL
+    junos_config:
+      lines:
+        - edit firewall family inet filter local_acl
+        - set term terminal_access from source-address 192.168.5.0/24
+        - set term terminal_access from protocol tcp
+        - set term terminal_access from port ssh
+        - set term terminal_access from port telnet
+        - set term terminal_access then accept
+      comment: update config
+      provider: "{{ device_info }}"
+  - name: confirm a previous commit
+    junos_config:
+      confirm_commit: yes
+      provider: "{{ device_info }}"
