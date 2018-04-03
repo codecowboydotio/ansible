@@ -1,0 +1,18 @@
+- hosts: "{{ target_hosts | default('eap-hosts') }}"
+  become: yes
+  become_user: root
+  tasks:
+  - name: Fetch Java version
+    shell: java -version 2>&1 | grep version | awk '{print $3}' | sed 's/"//g'
+    register: java_version
+  - assert:
+      that: 
+        - java_version.stdout | version_compare('1.7', '>=') 
+  - name: Check for oracle java
+    shell: java -version 2>&1 | grep -ic "oracle"
+    register: java_oracle
+    failed_when: "java_oracle.rc == 2"
+  - assert:
+      that: 
+        - "java_oracle > 0"
+      msg: "Oracle java seems to be present"
