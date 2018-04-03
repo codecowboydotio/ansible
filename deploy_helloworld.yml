@@ -1,0 +1,9 @@
+- hosts: "{{ target_hosts | default('eap-hosts') }}"
+  gather_facts: yes
+  tasks:
+  - name: Deploy war file
+    jboss:
+      src: {{ src_location }}
+      deployment: hello.war
+      deploy_path: {{ deploy_path }}
+      state: present
