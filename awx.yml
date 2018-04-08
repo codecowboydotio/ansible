@@ -1,0 +1,36 @@
+- hosts: "{{ target_hosts | default('eap-hosts') }}"
+  become: yes
+  become_user: root
+  tasks:
+    - name: install git
+      package: 
+        name: git
+        state: present
+    - name: install docker
+      package: 
+        name: docker
+        state: present
+    - name: install docker-py
+      pip:
+        name: docker-py
+    - name: install ansible-tower-cli
+      pip:
+        name: ansible-tower-cli
+    - name: install make
+      package: 
+        name: make
+        state: present
+    - name: install ansible
+      package: 
+        name: ansible
+        state: present
+    - name: pull git repo
+      git:
+        repo: https://github.com/ansible/awx
+        dest: /awx
+    - name: Start docker daemon
+      service:
+        name: docker
+        enabled: yes
+        state: started
+

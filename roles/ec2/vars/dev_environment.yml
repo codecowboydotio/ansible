@@ -1,6 +1,7 @@
 ec2_region: ap-southeast-2
 instances_keypair: aws_keys
-image_id: ami-e0c19f83
+#image_id: ami-e0c19f83
+image_id: ami-0038f562
 
 # security groups to be created
 security_groups:
