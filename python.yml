@@ -1,6 +1,7 @@
 - hosts: "{{ target_hosts | default('eap-hosts') }}"
+  gather_facts: False
   become: yes
   become_user: root
   tasks:
     - name: Install python
-      raw: dnf install python
+      raw: dnf install python -y
