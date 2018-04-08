@@ -15,7 +15,8 @@
       key_name: aws_keys
       group: default
       instance_type: t2.micro
-      image: ami-ccecf5af
+#      image: ami-ccecf5af
+      image: ami-0038f562
       wait: true
       count: "{{ instance_count }}"
       count_tag:
