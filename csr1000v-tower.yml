@@ -3,8 +3,8 @@
   vars:
     device_info:
       host: "{{ inventory_hostname }}"
-      username: codecowboy
-      password: Codecowboy12
+      username: "{{ username }}"
+      password: "{{ password }}"
      # authorize: yes
       #auth_pass: password
       #transport: cli
