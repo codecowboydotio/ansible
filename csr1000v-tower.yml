@@ -32,7 +32,7 @@
        when: banner == 'true'
     - name: configure the login banner
       ios_banner:
-        #banner: login
+        banner: login
         state: absent
         provider: "{{ device_info }}"
       when: banner == 'false'
