@@ -10,15 +10,15 @@
       #transport: cli
       timeout: 60
 #    interface_up: "{{ interface_up }}"
-  tasks: 
-    - name: Bring up secondary interface
-      ios_config:
-        parents: "interface GigabitEthernet2"
-        lines: 
-          - no shutdown
-          - ip address dhcp
-        provider: "{{ device_info }}"
-      when: interface_up == 'true'
+#  tasks: 
+#    - name: Bring up secondary interface
+#      ios_config:
+#        parents: "interface GigabitEthernet2"
+#        lines: 
+#          - no shutdown
+#          - ip address dhcp
+#        provider: "{{ device_info }}"
+#      when: interface_up == 'true'
     - name: configure the login banner
       ios_banner:
         banner: login
@@ -29,8 +29,10 @@
          ------------------------------------------
         state: present
         provider: "{{ device_info }}"
-#    - name: configure the login banner
-#      ios_banner:
-#        banner: login
-#        state: absent
-#        provider: "{{ device_info }}"
+       when: banner == 'true'
+    - name: configure the login banner
+      ios_banner:
+        banner: login
+        state: absent
+        provider: "{{ device_info }}"
+      when: banner == 'false'
