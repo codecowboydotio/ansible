@@ -3,8 +3,8 @@
   vars:
     device_info:
       host: "{{ inventory_hostname }}"
-      username: "{{ ansible_username }}"
-      password: "{{ ansible_password }}"
+      username: svk
+      password: Codecowboy123
      # authorize: yes
       #auth_pass: password
       #transport: cli
