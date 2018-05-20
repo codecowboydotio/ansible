@@ -13,4 +13,4 @@
     JBOSS_ADMIN_USER: "{{ jboss_admin_username }}"
     JBOSS_ADMIN_PASSWORD: "{{ jboss_admin_password }}"
   environment: "{{ env }}"
-  shell: $DEST_DIR/jboss-eap-7.0/bin/add-user.sh $JBOSS_ADMIN_USER $JBOSS_ADMIN_PASSWORD --silent
+  shell: $DEST_DIR/jboss-eap-7.1/bin/add-user.sh $JBOSS_ADMIN_USER $JBOSS_ADMIN_PASSWORD --silent

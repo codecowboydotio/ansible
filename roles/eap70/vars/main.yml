@@ -1,5 +1,5 @@
 dest_dir: /opt/eap7/
-zipfile: jboss-eap-7.0.0.zip
+zipfile: jboss-eap-7.1.0.zip
 jboss_admin_username: admin
 jboss_admin_password: Password123# 
 firewalld_status: off

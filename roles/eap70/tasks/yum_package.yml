@@ -1,8 +1,0 @@
-- name: Install unzip
-  package:
-    name: unzip
-    state: present
-- name: Install java
-  package:
-    name: java-1.8.0-openjdk-devel
-    state: present
