@@ -27,3 +27,4 @@
   - name: Wait for machines to come up completely
     wait_for: host={{ item.public_dns_name }} port=22
     with_items: '{{ec2.instances}}'
+  - debug: var=AWS_ACCESS_KEY_ID.stdout_lines
