@@ -4,7 +4,7 @@
   gather_facts: False
 
   vars_files:
-    - roles/ec2/vars/aws_creds.yml
+#    - roles/ec2/vars/aws_creds.yml
 
   tasks:
   - name: Provision simple instance
