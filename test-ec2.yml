@@ -1,7 +1,7 @@
 - name: Provision ec2 instances based on the environment
   hosts: localhost
   connection: local
-  gather_facts: False
+  gather_facts: True
 
   vars_files:
     - roles/ec2/vars/aws_creds.yml
