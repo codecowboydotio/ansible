@@ -1,5 +1,5 @@
 - hosts: "{{ target_hosts | default('eap-hosts') }}"
-  gather_facts: True
+  gather_facts: False
   become: yes
   become_user: root
   tasks:
