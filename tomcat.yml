@@ -25,13 +25,7 @@
       shell:  ./build.sh chdir={{ new_dir }}
     - name: Copy file to deployment directory
       shell: cp /helloworld.war /usr/share/tomcat/webapps
-    - name: Turn off firewalld
-      systemd:
-        name: firewalld
-        state: stopped
     - name: Start Tomcat
       systemd:
         name: tomcat
         state: started
-#    - name: foo
-#      shell: echo foo
