@@ -1,6 +1,4 @@
 - hosts: "{{ target_hosts | default('eap-hosts') }}"
-  vars:
-    - new_dir: /foo
   become: yes
   become_user: root
   tasks:
@@ -16,15 +14,6 @@
       package: 
         name: tomcat
         state: present
-    - name: pull hello world from git
-      git:
-        repo: git://github.com/svkdotcloud/helloworld-java
-        dest: "{{ new_dir }}"
-        clone: yes
-    - name: compile war file
-      shell:  ./build.sh chdir={{ new_dir }}
-    - name: Copy file to deployment directory
-      shell: cp /helloworld.war /usr/share/tomcat/webapps
     - name: Start Tomcat
       systemd:
         name: tomcat
