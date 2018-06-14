@@ -1,0 +1,17 @@
+- name: Apply ACL Junos
+  hosts: juniper
+  connection: local
+  gather_facts: no
+  vars:
+    device_info:
+      host: "{{ inventory_hostname }}"
+      username: jnpr
+      password: Automates
+  tasks:
+    - name: Gather config
+      junos_command: 
+        commands: 
+          - show interfaces fxp0
+        provider: "{{ device_info }}"
+      register: result
+    - debug: var=result.stdout
