@@ -1,0 +1,6 @@
+nightwatch_dir: "/nightwatch"
+selenium_file: "selenium-server-standalone-3.9.1.jar"
+chromedriver_file: "chromedriver"
+nightwatch_config_file: "nightwatch.json"
+
+

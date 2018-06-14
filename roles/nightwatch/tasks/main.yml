@@ -1,0 +1,68 @@
+- name: Install git
+  package: 
+    name: git
+    state: present
+- name: Install java
+  package: 
+    name: java
+    state: present
+- name: Install nodejs
+  package: 
+    name: nodejs
+    state: present
+- name: Install libselinux-python
+  package: 
+    name: libselinux-python
+    state: present
+- name: install the chrome rpm from a remote repo
+  dnf:
+    name: 'https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm'
+    state: present
+- name: Install "nightwatch" node.js package globally.
+  npm:
+    name: nightwatch
+    global: yes
+- name: Create nightwatch directory
+  file:
+    path: "{{ nightwatch_dir }}"
+    state: directory
+    mode: 0755
+- name: Get latest chrome driver version
+  get_url: 
+    url: http://chromedriver.storage.googleapis.com/LATEST_RELEASE
+    dest: /tmp
+- name: Set chrome driver version variable
+  shell: cat /tmp/LATEST_RELEASE
+  register: chrome_version
+#- name: Download latest chrome driver version
+#  get_url:
+#    url: 'http://chromedriver.storage.googleapis.com/{{ chrome_version.stdout }}/chromedriver_linux64.zip'
+#    dest: "{{ nightwatch_dir }}"
+- name: Unzip latest chrome driver
+  unarchive: 
+    src: "http://chromedriver.storage.googleapis.com/{{ chrome_version.stdout }}/chromedriver_linux64.zip"
+    dest: "{{ nightwatch_dir }}"
+    remote_src: yes
+- name: Get latest selenium version
+  get_url: 
+    url: http://selenium-release.storage.googleapis.com/3.9/selenium-server-standalone-3.9.1.jar
+    dest: "{{ nightwatch_dir }}"
+#- name: "Copy selenium to nightwatch directory"
+#  copy: 
+#    src: "{{ selenium_file }}"
+#    dest: "{{ nightwatch_dir }}"
+#    owner: root
+#    group: root
+#    mode: 0655
+- name: "Copy nightwatch config to nightwatch directory"
+  copy: 
+    src: "{{ nightwatch_config_file }}"
+    dest: "{{ nightwatch_dir }}"
+    owner: root
+    group: root
+    mode: 0644
+- name: Pull tests from github
+  git:
+    repo: 'https://github.com/codecowboydotio/nightwatch-tests'
+    dest: "{{ nightwatch_dir }}/tests"
+    clone: yes
