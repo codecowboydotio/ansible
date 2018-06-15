@@ -59,9 +59,9 @@
     repo: 'https://github.com/codecowboydotio/nightwatch-tests'
     dest: "{{ nightwatch_dir }}/tests"
     clone: yes
-- name: Set permissions on /nightwatch directory
-  file:
-    path: /nightwatch
-    owner: "{{ nightwatch_user }}"
-    group: "{{ nightwatch_group }}"
-    recurse: yes
+#- name: Set permissions on /nightwatch directory
+#  file:
+#    path: /nightwatch
+#    owner: "{{ nightwatch_user }}"
+#    group: "{{ nightwatch_group }}"
+#    recurse: yes
