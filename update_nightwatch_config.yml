@@ -1,0 +1,24 @@
+- hosts: "{{ target_hosts | default('null-hosts') }}"
+  vars: 
+     nightwatch_dir: "/nightwatch"
+     nightwatch_user: "jenkins"
+     nightwatch_group: "jenkins"
+  tasks:
+   - name: Pull tests from github
+     git:
+       repo: 'https://github.com/codecowboydotio/nightwatch-tests'
+       dest: "{{ nightwatch_dir }}/tests"
+       clone: yes
+       force: yes
+   - name: foo
+     replace:
+       path: /nightwatch/tests/tomcat.js
+       regexp: "fedora"
+       replace: "{{ replace_text }}"
+   - name: Set permissions on /nightwatch directory
+     file:
+       path: /nightwatch
+       owner: "{{ nightwatch_user }}"
+       group: "{{ nightwatch_group }}"
+       recurse: yes
+
