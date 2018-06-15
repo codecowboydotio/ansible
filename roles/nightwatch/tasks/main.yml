@@ -6,6 +6,10 @@
   package: 
     name: java
     state: present
+- name: Install unzip 
+  package: 
+    name: unzip
+    state: present
 - name: Install nodejs
   package: 
     name: nodejs
