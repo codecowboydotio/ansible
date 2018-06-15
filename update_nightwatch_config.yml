@@ -1,4 +1,6 @@
 - hosts: "{{ target_hosts | default('null-hosts') }}"
+  become: yes
+  become_user: root
   vars: 
      nightwatch_dir: "/nightwatch"
      nightwatch_user: "jenkins"
