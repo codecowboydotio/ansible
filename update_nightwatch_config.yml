@@ -14,11 +14,11 @@
      replace:
        path: /nightwatch/tests/tomcat.js
        regexp: "fedora"
-       replace: "{{ replace_text }}"
-   - name: Set permissions on /nightwatch directory
-     file:
-       path: /nightwatch
-       owner: "{{ nightwatch_user }}"
-       group: "{{ nightwatch_group }}"
-       recurse: yes
+       replace: "{{ ansible_host }}"
+   #- name: Set permissions on /nightwatch directory
+   #  file:
+   #    path: /nightwatch
+   #    owner: "{{ nightwatch_user }}"
+   #    group: "{{ nightwatch_group }}"
+   #    recurse: yes
 
