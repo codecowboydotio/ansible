@@ -1,0 +1,5 @@
+  "VPC ID,IS DEFAULT,STATE,CIDR_BLOCK"
+{% for i in fooble.vpcs %}
+  "{{i.vpc_id}},{{i.is_default}},{{i.state}},{{i.cidr_block}}"
+{% endfor %}
+

@@ -1,0 +1,20 @@
+- name: Provision ec2 instances based on the environment
+  hosts: localhost
+  connection: local
+  gather_facts: True
+
+  vars_files:
+     - ./ec2_vpc_creds.yml
+
+  tasks:
+  - name: Provision simple instance
+    ec2_vpc_net_facts:
+      ec2_access_key: "{{ ec2_access_key }}"
+      ec2_secret_key: "{{ ec2_secret_key }}"
+      region: ap-southeast-2
+    register: fooble
+  - debug: var=fooble.vpcs[1].vpc_id
+  - template:
+      src: ./aws.j2
+      dest: foo
+    ignore_errors: yes
