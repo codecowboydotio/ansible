@@ -15,8 +15,9 @@
       key_name: "{{ aws_keys }}"
       group: "{{ security_group }}"
       instance_type: t2.micro
-      image: ami-ccecf5af
+#      image: ami-ccecf5af
 #fedora      image: ami-0038f562
+      image: ami-67589505
       wait: true
       count: "{{ instance_count }}"
       count_tag:
