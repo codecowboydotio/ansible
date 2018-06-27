@@ -17,7 +17,8 @@
       instance_type: t2.micro
 #      image: ami-ccecf5af
 #fedora      image: ami-0038f562
-      image: ami-67589505
+# RHEL      image: ami-67589505
+      image: "{{ image_id }}"
       wait: true
       count: "{{ instance_count }}"
       count_tag:
