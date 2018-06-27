@@ -20,7 +20,7 @@
       wait: true
       count: "{{ instance_count }}"
       count_tag:
-        Name: Demo
+        Name: "{{ instance_name }}"
       instance_tags:
         Name: Demo
     register: ec2
