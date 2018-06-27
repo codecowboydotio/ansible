@@ -13,7 +13,7 @@
 #      ec2_secret_key: "{{ ec2_secret_key }}"
       region: ap-southeast-2
       key_name: "{{ aws_keys }}"
-      group: default
+      group: "{{ security_group }}"
       instance_type: t2.micro
       image: ami-ccecf5af
 #fedora      image: ami-0038f562
