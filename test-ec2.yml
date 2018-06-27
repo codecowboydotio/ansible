@@ -22,7 +22,7 @@
       count_tag:
         Name: "{{ instance_name }}"
       instance_tags:
-        Name: Demo
+        Name: "{{ instance_tags }}"
     register: ec2
   - name: Wait for machines to come up completely
     wait_for: host={{ item.public_dns_name }} port=22
