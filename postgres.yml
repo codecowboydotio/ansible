@@ -10,9 +10,12 @@
     package:
       name: yum
       state: latest
+#  - name: Install psycopg2
+#    pip:
+#      name: psycopg2
   - name: Install psycopg2
     pip:
-      name: psycopg2
+      name: psycopg2-binary
   - name: initialize the postgress DB
     command: postgresql-setup initdb
     ignore_errors: yes    
