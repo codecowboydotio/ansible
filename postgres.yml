@@ -41,7 +41,7 @@
       name: test-user
       password: test-user123@
       encrypted: yes
-      priv: "CONNECT/products:ALL"
+      priv: "CONNECT/test-database:ALL"
     ignore_errors: yes
   - name: dump the database to a file  
     become: yes
