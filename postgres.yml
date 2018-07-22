@@ -1,0 +1,36 @@
+- hosts:
+    "{{ target_hosts | default('null-hosts') }}"
+  become: true
+  tasks:
+  - name: install postgress on ec2 instance
+    yum:
+      name: postgresql-server.x86_64
+      state: latest
+  - name: initialize the postgress DB
+    command: postgresql-setup initdb
+    ignore_errors: yes    
+  - name: Start the postgres service
+    service:
+      name: postgresql
+      state: started
+      enabled: yes
+    ignore_errors: yes
+  - name: Create a new Database
+    postgresql_db:
+      name: "test-database"
+      login_user: "postgres"
+      login_password: "postgres"
+    ignore_errors: yes
+  - name: create a test user to the database    
+    postgresql_user:
+      db: test-database
+      name: test-user
+      password: test-user123@
+      priv: "CONNECT/products:ALL"
+    ignore_errors: yes
+  - name: dump the database to a file  
+    postgresql_db:
+      name: test-database
+      state: dump
+      target: /tmp/test-database.sql
+    ignore_errors: yes   
