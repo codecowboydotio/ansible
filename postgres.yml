@@ -6,6 +6,10 @@
     package:
       name: postgresql-server.x86_64
       state: latest
+  - name: install yum
+    package:
+      name: yum
+      state: latest
   - name: initialize the postgress DB
     command: postgresql-setup initdb
     ignore_errors: yes    
