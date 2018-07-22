@@ -31,6 +31,8 @@
       login_password: "postgres"
     ignore_errors: yes
   - name: create a test user to the database    
+    become: yes
+    become_user: postgres
     postgresql_user:
       db: test-database
       name: test-user
@@ -38,6 +40,8 @@
       priv: "CONNECT/products:ALL"
     ignore_errors: yes
   - name: dump the database to a file  
+    become: yes
+    become_user: postgres
     postgresql_db:
       name: test-database
       state: dump
