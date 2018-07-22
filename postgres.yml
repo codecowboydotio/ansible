@@ -40,6 +40,7 @@
       db: test-database
       name: test-user
       password: test-user123@
+      encrypted: yes
       priv: "CONNECT/products:ALL"
     ignore_errors: yes
   - name: dump the database to a file  
