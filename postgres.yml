@@ -23,6 +23,8 @@
       enabled: yes
     ignore_errors: yes
   - name: Create a new Database
+    become: yes
+    become_user: postgres
     postgresql_db:
       name: "test-database"
       login_user: "postgres"
