@@ -39,6 +39,7 @@
       name: test-user
       password: test-user123@
       encrypted: yes
+      role_attr_flags: SUPERUSER,CREATEROLE,CREATEDB,INHERIT,LOGIN,REPLICATION,BYPASSRLS
     ignore_errors: yes
   - name: dump the database to a file  
     become: yes
