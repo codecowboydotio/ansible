@@ -27,7 +27,7 @@
     become: yes
     become_user: postgres
     postgresql_db:
-      name: "test-database"
+      name: "{{ database_name }}"
       login_user: "postgres"
       login_password: "postgres"
     ignore_errors: yes
@@ -35,7 +35,7 @@
     become: yes
     become_user: postgres
     postgresql_user:
-      db: test-database
+      db: "{{ database_name }}"
       name: test-user
       password: test-user123@
       encrypted: yes
@@ -44,7 +44,7 @@
     become: yes
     become_user: postgres
     postgresql_db:
-      name: test-database
+      name: "{{ database_name }}"
       state: dump
       target: /tmp/test-database.sql
     ignore_errors: yes   
