@@ -10,9 +10,7 @@
     package:
       name: yum
       state: latest
-#  - name: Install psycopg2
-#    pip:
-#      name: psycopg2
+    when: ansible_distribution == "Fedora"
   - name: Install psycopg2
     pip:
       name: psycopg2-binary
@@ -41,7 +39,6 @@
       name: test-user
       password: test-user123@
       encrypted: yes
-      #priv: "CONNECT/test-database:ALL"
     ignore_errors: yes
   - name: dump the database to a file  
     become: yes
