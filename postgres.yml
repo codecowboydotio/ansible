@@ -47,5 +47,5 @@
     postgresql_db:
       name: "{{ database_name }}"
       state: dump
-      target: /tmp/test-database.sql
+      target: /tmp/"{{ database_name }}".sql
     ignore_errors: yes   
