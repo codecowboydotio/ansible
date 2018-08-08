@@ -1,0 +1,75 @@
+- hosts: "{{ target_hosts | default('sql') }}"
+  vars:
+    - new_dir: /foo
+  become: yes
+  become_user: root
+  tasks:
+    - name: get the mssql repo file
+      get_url: 
+        url: https://packages.microsoft.com/config/rhel/7/mssql-server-2017.repo
+        dest: /etc/yum.repos.d/
+    - name: Install the SQL Tools repo
+      get_url: 
+        url: https://packages.microsoft.com/config/rhel/7/prod.repo
+        dest: /etc/yum.repos.d/
+    - name: Check for existing directory
+      stat:
+        path: /opt/mssql
+      register: install_dir
+    - name: Install git
+      package: 
+        name: git
+        state: present
+    - name: Install SQL Server
+      package: 
+        name: mssql-server
+        state: present
+    - name: Run SQL Server Setup
+      vars:
+        env:
+          ACCEPT_EULA: 'Y'
+          MSSQL_PID: 'Developer'
+          MSSQL_SA_PASSWORD: 'Password123'
+          MSSQL_LCID: '1033'
+      environment: "{{ env }}"
+      shell: /opt/mssql/bin/mssql-conf setup
+      when: not install_dir.stat.exists
+    - name: Get latest pip installer
+      get_url: 
+        url: https://bootstrap.pypa.io/get-pip.py
+        dest: /tmp
+    - name: Install pip
+      shell: python /tmp/get-pip.py
+    - name: Install pexpect
+      pip:
+        name: pexpect
+        state: present
+    - name: Install firewall rules for SQL traffic
+      firewalld:
+        zone: public
+        port: 1433/tcp
+        permanent: true
+        state: enabled
+    - name: Install SQL Tools
+      expect:
+        echo: yes
+        command: yum -y install mssql-tools
+        responses: 
+            Enter YES or NO: "YES"
+            Enter YES or NO: "YES"
+    - name: Install ODBC
+      package:
+        name: unixODBC-devel
+        state: present
+    - name: reload service firewalld
+      systemd:
+        name: firewalld
+        state: reloaded
+    - name: Pull database files from git
+      git:
+        repo: 'http://github.com/codecowboydotio/microsoft-demo'
+        dest: /root/demo
+    - name: Create Database
+      shell: /opt/mssql-tools/bin/sqlcmd -U sa -P 'Password123' -i /root/demo/sa-tables.sql -o /root/demo/output
+    - name: Import data in to database
+      shell: /opt/mssql-tools/bin/sqlcmd -U sa -P 'Password123' -i /root/demo/sa-dataset.sql -o /root/demo/output

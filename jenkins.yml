@@ -1,13 +1,12 @@
-- hosts: eap-hosts
+- hosts: jenkins
   gather_facts: yes
-  roles: 
-   - eap70
   tasks:
   - name: Deploy war file
     uri: 
-      url: "http://jenkins:8080/jenkins/job/deploy_to_eap/buildWithParameters?server={{ ansible_hostname }}&token=78915f568c3504976b97335e7e6c2102"
+      url: "http://jenkins:8080/job/Deploy-hello-world/build?token=608bbe693c9bffb47f2fbbfa971a2814"
       method: POST
       user: admin
       password: password
       force_basic_auth: yes
       status_code: 201
+    delegate_to: 127.0.0.1
