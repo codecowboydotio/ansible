@@ -1,11 +1,14 @@
-- hosts: "{{ target_hosts | default('eap-hosts') }}"
+- hosts: "{{ target_hosts | default('win2k16') }}"
   tasks:
     - name: install tomcat
       win_chocolatey: 
         name: tomcat
         state: present
+    - name: Pull application artifact from web server
+      win_get_url:
+        url: 'https://github.com/codecowboydotio/microsoft-demo/blob/master/sa_data_demo.war'
+        dest: c:\foo\sa_data_demo.war
     - name: deploy war file
       win_copy:
-        src: /home/svankalk/Desktop/sa_data_demo.war
+        src: /warfiles/sa_data_demo.war
         dest: C:\Program Files\Apache Software Foundation\tomcat\apache-tomcat-8.5.12\webapps\sa_data_demo.war
-        #dest: c:\foo\sa_data_demo.war
