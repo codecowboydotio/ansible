@@ -1,0 +1,14 @@
+- hosts: "{{ target_hosts | default('sql') }}"
+  vars:
+    - new_dir: /foo
+  become: yes
+  become_user: root
+  tasks:
+    - name: Pull database files from git
+      git:
+        repo: 'http://github.com/codecowboydotio/microsoft-demo'
+        dest: /root/demo
+    - name: Create Database
+      shell: /opt/mssql-tools/bin/sqlcmd -U sa -P 'Password123' -i /root/demo/sa-tables.sql -o /root/demo/output
+    - name: Import data in to database
+      shell: /opt/mssql-tools/bin/sqlcmd -U sa -P 'Password123' -i /root/demo/sa-dataset.sql -o /root/demo/output
