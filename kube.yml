@@ -1,0 +1,58 @@
+- hosts: "{{ target_hosts | default('kube') }}"
+  gather_facts: yes
+  tasks:
+  - name: install docker
+    package:
+      name: docker
+      state: present
+  - name: start docker service
+    systemd: 
+      name: docker
+      state: started
+  - name: enable docker service
+    systemd:
+      name: docker
+      enabled: yes
+  - name: Add kubernetes repository
+    yum_repository:
+      name: kubernetes
+      description: kubernetes
+      baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+  - name: Install libselinux-python
+    package:
+      name: libselinux-python
+      state: present
+  - name: Turn off selinux
+    selinux:
+      state: disabled
+  - name: Install kubelet
+    package: 
+      name: 
+        - kubeadm
+        - kubelet 
+        - kubectl
+      state: present
+  - name: enable kubelet
+    systemd:
+      name: kubelet
+      enabled: yes
+  - name: start kubelet service
+    systemd: 
+      name: kubelet
+      state: started
+  - name: Configure iptables6
+    sysctl:
+      name: net.bridge.bridge-nf-call-ip6tables
+      value: 1
+      sysctl_set: yes
+      state: present
+    reload: yes
+  - name: Configure iptables
+    sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: 1
+      sysctl_set: yes
+      state: present
+    reload: yes
+  - name: disable swap
+    shell: swapoff -a
