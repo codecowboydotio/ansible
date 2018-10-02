@@ -56,3 +56,27 @@
     reload: yes
   - name: disable swap
     shell: swapoff -a
+  - name: kubeadm init
+    shell: kubeadm init
+  - name: Add the user 'johnd' with a specific uid and a primary group of 'admin'
+    user:
+      name: johnd
+      comment: John Doe
+  - name: Make kube directory
+    file: 
+      path: /home/johnd/.kube
+      owner: johnd
+      group: johnd
+      state: directory
+  - name: example copying file with owner and permissions
+    copy:
+      src: /etc/kubernetes/admin.conf
+      dest: /home/johnd/.kube/config
+      owner: johnd
+      group: johnd
+      mode: 0644
+      remote_src: yes
+
+
+#sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+#sudo chown $(id -u):$(id -g) $HOME/.kube/config
