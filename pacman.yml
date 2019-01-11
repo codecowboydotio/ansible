@@ -1,0 +1,40 @@
+- name: Provision ec2 instances based on the environment
+  hosts: localhost
+  gather_facts: True
+
+  vars_files:
+    - roles/ec2/vars/aws_creds.yml
+  vars:
+    instance_type: t2.micro
+    security_group: default
+    image: ami-0009e96d7d65e3779
+    keypair: aws_keypair
+    region: ap-southeast-2
+    count: 1
+
+
+  tasks:
+    - name: Launch the new EC2 Instance
+      ec2:
+        aws_access_key: "{{ ec2_access_key }}"
+        aws_secret_key: "{{ ec2_secret_key }}"
+        group: "{{ security_group }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ image }}"
+        wait: true
+        region: "{{ region }}"
+        keypair: "{{ keypair }}"
+        count: "{{count}}"
+        instance_tags: '{"color":"blue"}'
+      register: ec2
+    - debug: var=ec2.instances[0].public_ip
+    - name: Wait for machines to come up completely
+      wait_for: host={{ item.public_dns_name }} port=22
+      with_items: '{{ec2.instances}}'
+    - name: ping to get facts
+      ping:
+    - name: install git on {{ ec2.instances[0].public_ip }}
+      package:
+        name: git
+        state: present
+      delegate_to: "{{ ec2.instances[0].public_ip }}"
