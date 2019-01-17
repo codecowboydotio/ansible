@@ -1,7 +1,11 @@
 - hosts: "{{ target_hosts | default('eap-hosts') }}"
   become: yes
   become_user: root
+  gather_facts: false
+
   tasks:
+    - name: Install python
+      raw: dnf install python -y
     - name: install git
       package: 
         name: git
@@ -28,9 +32,46 @@
       git:
         repo: https://github.com/ansible/awx
         dest: /awx
+        force: yes
     - name: Start docker daemon
       service:
         name: docker
         enabled: yes
         state: started
-
+    - name: Install libselinux
+      package:
+        name: libselinux-python
+        state: present
+    - name: Install expect
+      package:
+        name: expect
+        state: present
+    - name: Change value of host key checking on AWX server
+      lineinfile:
+        path: /etc/ansible/ansible.cfg
+        regexp: '#host_key_checking = False'
+        line: 'host_key_checking = False' 
+    - name: generate ssh key for local use
+      command: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+      args:
+        creates: /root/.ssh/id_rsa
+#    - name: copy localhost ssh script in place
+#      copy:
+#        src: files/ssh-localhost.sh
+#        dest: /root/ssh-localhost.sh
+#        mode: 755
+#    - name: configure local ssh access
+#      command: /root/ssh-localhost.sh
+#      ignore_errors: yes
+    - name: Add key to authorized_keys
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+    - name: change value of host in installer inventory
+      lineinfile:
+        path: /awx/installer/inventory
+        regexp: 'localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python"'
+        line: 'localhost'
+    - name: install AWX
+      command:  ansible-playbook -i /awx/installer/inventory /awx/installer/install.yml 
