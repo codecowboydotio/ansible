@@ -5,7 +5,7 @@
   vars_files:
     - roles/ec2/vars/aws_creds.yml
   vars:
-    instance_type: t2.micro
+    instance_type: t2.large
     security_group: svk-security-group
     image: ami-0009e96d7d65e3779
     keypair: svk-keypair-f5
@@ -26,6 +26,7 @@
         keypair: "{{ keypair }}"
         count: "{{count}}"
         instance_tags: '{"application":"pacman"}'
+        instance_initiated_shutdown_behavior: terminate
       register: ec2
     - debug: var=ec2.instances[0].public_ip
     - name: Wait for machines to come up completely
