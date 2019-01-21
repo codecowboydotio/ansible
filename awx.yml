@@ -28,7 +28,7 @@
       package: 
         name: ansible
         state: present
-    - name: pull git repo
+    - name: pull AWX from git repo
       git:
         repo: https://github.com/ansible/awx
         dest: /awx
@@ -42,10 +42,6 @@
       package:
         name: libselinux-python
         state: present
-    - name: Install expect
-      package:
-        name: expect
-        state: present
     - name: Change value of host key checking on AWX server
       lineinfile:
         path: /etc/ansible/ansible.cfg
@@ -55,17 +51,12 @@
       command: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
       args:
         creates: /root/.ssh/id_rsa
-    - name: copy localhost ssh script in place
-      copy:
-        src: files/ssh-localhost.sh
-        dest: /root/ssh-localhost.sh
-        mode: 755
     - name: configure local ssh access
       copy: 
         remote_src: True 
         src: /root/.ssh/id_rsa.pub
         dest: /root/.ssh/authorized_keys
-    - name: Add key to authorized_keys
+    - name: Add local key to authorized_keys
       authorized_key:
         user: root
         state: present
@@ -84,4 +75,9 @@
         - tower-cli config username admin
         - tower-cli config password password
         - tower-cli config host http://127.0.0.1
-
+    - name: Check to ensure AWX has come up successfully - this can take some time.
+      shell: tower-cli project list
+      register: result
+      until: result.stdout.find("Demo Project") != -1
+      retries: 10
+      delay: 30
