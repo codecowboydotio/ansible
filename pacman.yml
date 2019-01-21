@@ -25,7 +25,7 @@
         region: "{{ region }}"
         keypair: "{{ keypair }}"
         count: "{{count}}"
-        instance_tags: '{"application":"pacman"}'
+        instance_tags: '{"owner":"svk"}'
         instance_initiated_shutdown_behavior: terminate
       register: ec2
     - debug: var=ec2.instances[0].public_ip
@@ -34,8 +34,3 @@
       with_items: '{{ec2.instances}}'
     - name: ping to get facts
       ping:
-#    - name: install git on {{ ec2.instances[0].public_ip }}
-#      package:
-#        name: git
-#        state: present
-#      delegate_to: "{{ ec2.instances[0].public_ip }}"
