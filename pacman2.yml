@@ -1,0 +1,34 @@
+- name: Provision ec2 instances based on the environment
+  hosts: aws
+  gather_facts: False
+  become: yes
+  become_user: root
+
+  vars_files:
+    - roles/ec2/vars/aws_creds.yml
+  vars:
+    count: 1
+
+
+  tasks:
+    - name: Install python
+      raw: dnf install python -y
+    - name: install git 
+      package:
+        name: git
+        state: present
+    - name: install httpd
+      package:
+        name: httpd
+        state: present
+    - name: pull git repo
+      git:
+        repo: https://github.com/platzhersh/pacman-canvas
+        dest: /var/www/html
+    - name: Start httpd daemon
+      service:
+        name: httpd
+        enabled: yes
+        state: started
+    - name: Update index file
+      command: mv /var/www/html/index.htm /var/www/html/index.html

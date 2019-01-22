@@ -1,4 +1,4 @@
-- hosts: "{{ target_hosts | default('eap-hosts') }}"
+- hosts: "{{ target_hosts | default('aws') }}"
   become: yes
   become_user: root
   gather_facts: false
