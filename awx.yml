@@ -33,6 +33,7 @@
         repo: https://github.com/ansible/awx
         dest: /awx
         force: yes
+        version: 2.1.2
     - name: Start docker daemon
       service:
         name: docker

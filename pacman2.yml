@@ -4,8 +4,8 @@
   become: yes
   become_user: root
 
-  vars_files:
-    - roles/ec2/vars/aws_creds.yml
+#  vars_files:
+#    - roles/ec2/vars/aws_creds.yml
   vars:
     count: 1
 
