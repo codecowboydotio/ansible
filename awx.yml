@@ -81,3 +81,8 @@
       until: result.stdout.find("Demo Project") != -1
       retries: 10
       delay: 30
+    - name: copy tower config file to node
+      copy:
+        src: ../setup-tower.sh
+        dest: /root/setup-tower.sh
+        mode: 0755 

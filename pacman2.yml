@@ -1,5 +1,5 @@
 - name: Provision ec2 instances based on the environment
-  hosts: aws
+  hosts: "{{ target_hosts | default('aws') }}"
   gather_facts: False
   become: yes
   become_user: root
