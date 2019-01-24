@@ -4,9 +4,9 @@
   gather_facts: True
 
   vars:
-    fooble: "{{ hostvars['ec2_id'] }}"
+    fooble: "{{ ec2_id }}"
 
   tasks:
   - name: get variables
     debug:
-      var: hostvars[inventory_hostname]
+      var: "{{ fooble }}"
