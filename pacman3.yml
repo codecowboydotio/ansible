@@ -7,7 +7,7 @@
     - name: Get instance tags
       ec2_tag:
         region: ap-southeast-2
-        resource: "{{ ansible_facts.ec2_id }}"
+        resource: "{{ ansible_facts['ec2_id'] }}"
         state: present
         tags:
           Name: dbserver
