@@ -7,11 +7,6 @@
     fooble: "{{ hostvars['ec2_id'] }}"
 
   tasks:
-    - name: Get instance tags
-      ec2_tag:
-        region: ap-southeast-2
-        resource: "{{ fooble }}"
-        state: present
-        tags:
-          Name: dbserver
-          Env: production
+  - name: get variables
+    debug:
+      var: hostvars[inventory_hostname]
