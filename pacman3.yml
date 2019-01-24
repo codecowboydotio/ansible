@@ -5,7 +5,10 @@
 
   vars:
     fooble: "{{ ec2_id }}"
+    original_tag: "{{ ec2_tag_application }}"
 
   tasks:
   - name: get variables
     debug: var=fooble 
+  - name: get variables
+    debug: var=original_tag
