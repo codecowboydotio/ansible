@@ -1,0 +1,14 @@
+- name: Provision ec2 instances based on the environment
+  hosts: localhost
+  connection: local
+  gather_facts: True
+
+  tasks:
+    - name: Get instance tags
+      ec2_tag:
+        region: ap-southeast-2
+        resource: "{{ ec2_id }}"
+        state: present
+        tags:
+          Name: dbserver
+          Env: production

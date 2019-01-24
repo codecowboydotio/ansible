@@ -84,6 +84,13 @@
       delay: 30
     - name: copy tower config file to node
       copy:
-        src: ../setup-tower.sh
+        src: files/setup-tower.sh
         dest: /root/setup-tower.sh
         mode: 0755 
+    - name: copy workflow schema file to node
+      copy:
+        src: files/pacman_workflow.yml
+        dest: /root/pacman_workflow.yml
+        mode: 0755 
+    - name: Run tower setup script
+      command: /root/setup-tower.sh
