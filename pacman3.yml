@@ -8,5 +8,4 @@
 
   tasks:
   - name: get variables
-    debug:
-      var: "{{ fooble }}"
+    debug: var=fooble 
