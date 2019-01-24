@@ -93,4 +93,4 @@
         dest: /root/pacman_workflow.yml
         mode: 0755 
     - name: Run tower setup script
-      command: /root/setup-tower.sh
+      shell: /root/setup-tower.sh
