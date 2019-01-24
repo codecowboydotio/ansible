@@ -26,6 +26,9 @@
             HOST Variables ("hostvars"):
             --------------------------------
             {{ hostvars | to_nice_json }} 
+      debug: 
+        msg: "{{ msg.split('\n') }}"       
+      tags: debug_info
     - name: Get instance tags
       ec2_tag:
         region: ap-southeast-2
