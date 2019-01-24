@@ -4,7 +4,7 @@
   gather_facts: True
 
   vars:
-    fooble: "{{ ec2_id }}"
+    fooble: "{{ hostvars['ec2_id'] }}"
 
   tasks:
     - name: Get instance tags
