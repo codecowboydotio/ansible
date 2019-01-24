@@ -4,6 +4,9 @@
   gather_facts: True
 
   tasks:
+    - name: Print all variables for each remote device
+      debug: 
+        var: hostvars[]
     - name: Get instance tags
       ec2_tag:
         region: ap-southeast-2
