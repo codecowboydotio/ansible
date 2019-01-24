@@ -3,19 +3,17 @@
   gather_facts: False
   become: yes
   become_user: root
-
-#  vars_files:
-#    - roles/ec2/vars/aws_creds.yml
-  vars:
-    count: 1
-
-
+  
   tasks:
     - name: Install python
       raw: dnf install python -y
     - name: install git 
       package:
         name: git
+        state: present
+    - name: Install boto3
+      pip:
+        name: boto3
         state: present
     - name: install httpd
       package:
@@ -25,6 +23,7 @@
       git:
         repo: https://github.com/platzhersh/pacman-canvas
         dest: /var/www/html
+        force: yes
     - name: Start httpd daemon
       service:
         name: httpd

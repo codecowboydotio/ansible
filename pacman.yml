@@ -6,7 +6,7 @@
 #  vars_files:
 #    - roles/ec2/vars/aws_creds.yml
   vars:
-    instance_type: t2.large
+    instance_type: t2.micro
     security_group: sg-04f8a0a2b8893f983
     subnet_id: subnet-00d6dc3b42d57fa0d
     image: ami-0009e96d7d65e3779
@@ -27,7 +27,7 @@
         region: "{{ region }}"
         keypair: "{{ keypair }}"
         count: "{{count}}"
-        instance_tags: '{"owner":"svk"}'
+        instance_tags: '{"owner":"svk","application":"build"}'
         instance_initiated_shutdown_behavior: terminate
         vpc_subnet_id: "{{ subnet_id }}"
       register: ec2
