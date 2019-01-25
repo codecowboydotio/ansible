@@ -12,7 +12,7 @@
     debug: var=fooble 
   - name: get variables
     debug: var=original_tag
-  - name Update tag
+  - name: Update tag
     ec2_tag:
       region: ap-southeast-2
       resource: "{{ fooble }}"
