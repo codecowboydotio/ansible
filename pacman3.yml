@@ -20,6 +20,5 @@
       resource: "{{ fooble }}"
       state: present
       tags:
-        Name: ubervol
-        env: prod
+        application: prod
 
