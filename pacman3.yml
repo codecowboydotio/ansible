@@ -14,10 +14,10 @@
     debug: var=original_tag
   - name Update tag
     ec2_tag:
-    region: ap-southeast-2
-    resource: "{{ fooble }}"
-    state: present
-    tags:
-      Name: ubervol
-      env: prod
+      region: ap-southeast-2
+      resource: "{{ fooble }}"
+      state: present
+      tags:
+        Name: ubervol
+        env: prod
 
