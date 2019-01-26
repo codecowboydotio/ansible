@@ -1,5 +1,5 @@
 - job_template: "New Server"
   success:
     - job_template: "Install Application"
-    success:
-      - job_template: "Update Tags"
+      success:
+        - job_template: "Update Tags"

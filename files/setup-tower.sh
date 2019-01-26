@@ -25,6 +25,7 @@ tower-cli job_template associate_credential --credential aws-account --job-templ
 tower-cli job_template create --name "Install Application" --job-type run --inventory AWS --project ansible --playbook pacman2.yml --credential root-ssh --extra-vars "target_hosts=all"
 
 tower-cli job_template create --name "Update Tags" --job-type run --inventory AWS --project ansible --playbook pacman3.yml --credential root-ssh --extra-vars "target_hosts=all"
+tower-cli job_template associate_credential --credential aws-account --job-template "Update Tags"
 
 #create workflow
 tower-cli workflow create --name "pacman_workflow"

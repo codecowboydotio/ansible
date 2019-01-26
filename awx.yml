@@ -94,4 +94,5 @@
         mode: 0755 
     - name: Run tower setup script
       shell: /root/setup-tower.sh
-
+    - name: Run tower setup script again!
+      shell: /root/setup-tower.sh
