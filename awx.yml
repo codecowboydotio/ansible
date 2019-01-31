@@ -98,4 +98,6 @@
       shell: "{{ item }}" 
       with_items:
         - tower-cli workflow create --name "pacman_workflow"
-        - tower-cli workflow schema pacman_workflow @pacman_workflow.yml
+        - tower-cli workflow schema pacman_workflow @/root/pacman_workflow.yml
+        - tower-cli project create --name ansible-AS3 --scm-type git --scm-url http://github.com/codecowboydotio/ansible-AS3 --organization Default --wait
+        - tower-cli inventory_source create --name "aws-source" --inventory "aws-bigip" --source ec2 --credential "aws-account" --update-on-launch "true" --overwrite "true" --instance-filters "tag:Name=bigip"

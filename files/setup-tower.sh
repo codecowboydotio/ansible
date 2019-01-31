@@ -34,7 +34,6 @@ tower-cli workflow schema pacman_workflow @pacman_workflow.yml
 
 # delete default stuff
 tower-cli job_template delete --name "Demo Job Template"
-tower-cli project delete --name "Demo Project"
+#tower-cli project delete --name "Demo Project"
 tower-cli credential delete --name "Demo Credential"
 tower-cli inventory delete --name "Demo Inventory"
-
