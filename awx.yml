@@ -100,4 +100,7 @@
         - tower-cli workflow create --name "pacman_workflow"
         - tower-cli workflow schema pacman_workflow @/root/pacman_workflow.yml
         - tower-cli project create --name ansible-AS3 --scm-type git --scm-url http://github.com/codecowboydotio/ansible-AS3 --organization Default --wait
-        - tower-cli inventory_source create --name "aws-source" --inventory "aws-bigip" --source ec2 --credential "aws-account" --update-on-launch "true" --overwrite "true" --instance-filters "tag:Name=bigip"
+        - tower-cli inventory create --name aws-bigip --organization Default
+        - tower-cli inventory_source create --name "aws-source" --inventory "aws-bigip" --source ec2 --credential "aws-account" --update-on-launch "true" --overwrite "true" --instance-filters "tag:boxtype=bigip"
+        - tower-cli job_template create --name "Update AS3 declaration" --job-type run --inventory aws-bigip --project ansible-AS3 --playbook AS3-select-vip.yml --credential root-ssh --extra-vars "target_hosts=all"
+        - tower-cli job_template associate_credential --credential aws-account --job-template "Update AS3 declaration"

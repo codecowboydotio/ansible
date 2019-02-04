@@ -28,9 +28,9 @@ tower-cli job_template create --name "Update Tags" --job-type run --inventory AW
 tower-cli job_template associate_credential --credential aws-account --job-template "Update Tags"
 
 #create workflow
-tower-cli workflow create --name "pacman_workflow"
+tower-cli workflow create --name "webapp_workflow"
 sleep 10
-tower-cli workflow schema pacman_workflow @pacman_workflow.yml
+tower-cli workflow schema webapp_workflow @pacman_workflow.yml
 
 # delete default stuff
 tower-cli job_template delete --name "Demo Job Template"
