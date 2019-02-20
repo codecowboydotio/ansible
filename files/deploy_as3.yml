@@ -1,0 +1,3 @@
+- job_template: "Update AS3 declaration"
+  success:
+    - job_template: "Post AS3 declaration"

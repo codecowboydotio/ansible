@@ -87,6 +87,16 @@
         src: files/pacman_workflow.yml
         dest: /root/pacman_workflow.yml
         mode: 0755 
+    - name: copy workflow telemetry streaming schema file to node
+      copy:
+        src: files/ts_workflow.yml
+        dest: /root/ts_workflow.yml
+        mode: 0755 
+    - name: copy workflow deploy as3 schema file to node
+      copy:
+        src: files/deploy_as3.yml
+        dest: /root/deploy_as3.yml
+        mode: 0755 
     - name: copy tower config file to node
       copy:
         src: files/setup-tower.sh
@@ -104,3 +114,7 @@
         - tower-cli inventory_source create --name "aws-source" --inventory "aws-bigip" --source ec2 --credential "aws-account" --update-on-launch "true" --overwrite "true" --instance-filters "tag:boxtype=bigip"
         - tower-cli job_template create --name "Update AS3 declaration" --job-type run --inventory aws-bigip --project ansible-AS3 --playbook AS3-select-vip.yml --credential root-ssh --extra-vars "target_hosts=all aws_region=ap-southeast-2"
         - tower-cli job_template associate_credential --credential aws-account --job-template "Update AS3 declaration"
+        - tower-cli job_template create --name "Post AS3 declaration" --job-type run --inventory aws-bigip --project ansible-AS3 --playbook AS3.yml --credential root-ssh --extra-vars "target_hosts=all bigip_port=8443 HTTP_METHOD=POST file_name=AS3-vip.json"
+        - tower-cli job_template associate_credential --credential aws-account --job-template "Post AS3 declaration"
+        - tower-cli workflow create --name "deploy_as3"
+        - tower-cli workflow schema deploy_as3 @/root/deploy_as3.yml
