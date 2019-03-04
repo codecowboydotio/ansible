@@ -118,3 +118,5 @@
         - tower-cli job_template associate_credential --credential aws-account --job-template "Post AS3 declaration"
         - tower-cli workflow create --name "deploy_as3"
         - tower-cli workflow schema deploy_as3 @/root/deploy_as3.yml
+    - name: Install F5 SDK
+      shell: docker exec awx_task pip install f5-sdk
