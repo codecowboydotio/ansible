@@ -1,0 +1,78 @@
+- name: Base VE config
+  hosts: "{{ target_hosts | default('f5') }}"
+  connection: local
+  gather_facts: False
+
+  vars:
+    bigip_provider:
+      server: 10.1.1.245
+      user: admin
+      password: admin
+      validate_certs: no
+    bigip_pool: web
+    bigip_pool_member: 10.1.20.100
+    bigip_pool_member_port: 80
+    bigip_vip_port: 80
+    bigip_virtual_name: web-vip
+
+  tasks:
+  - name: Add 1.1 as untagged interface for outside VLAN
+    bigip_vlan:
+        untagged_interface: 1.1
+        name: "outside"
+        provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Add 1.2 as untagged interface for inside VLAN
+    bigip_vlan:
+        untagged_interface: 1.2
+        name: "inside"
+        provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Create Self IP
+    bigip_selfip:
+      address: 10.1.10.1
+      name: outside-self1
+      netmask: 255.255.255.0
+      vlan: outside
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Create Self IP
+    bigip_selfip:
+      address: 10.1.20.1
+      name: inside-self1
+      netmask: 255.255.255.0
+      vlan: inside
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Create pool
+    bigip_pool:
+      state: present
+      name: "{{ bigip_pool }}"
+      partition: Common
+      lb_method: least-connections-member
+      slow_ramp_time: 120
+      monitors:
+        - http
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Add pool member
+    bigip_pool_member:
+      state: present
+      pool: "{{ bigip_pool }}"
+      partition: Common
+      host: "{{ bigip_pool_member }}"
+      port: "{{ bigip_pool_member_port }}"
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Add virtual server
+    bigip_virtual_server:
+      state: present
+      partition: Common
+      name: "{{ bigip_virtual_name }}"
+      destination: 10.1.10.100
+      port: "{{ bigip_vip_port }}"
+      pool: "{{ bigip_pool }}"
+      snat: Automap
+      description: Test Virtual Server
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
