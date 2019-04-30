@@ -76,3 +76,19 @@
       description: Test Virtual Server
       provider: "{{ bigip_provider }}"
     delegate_to: localhost
+  - name: Upload an irule
+    bigip_irule:
+      content: "{{ lookup('template', 'test.tcl') }}"
+      module: ltm
+      name: MyiRule
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Collect BIG-IP facts
+    bigip_device_facts:
+      gather_subset:
+        - virtual-servers
+        - virtual-addresses
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+    register: bigip_stuff
+  - debug: var=bigip_stuff
