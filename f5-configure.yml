@@ -92,3 +92,4 @@
     delegate_to: localhost
     register: bigip_stuff
   - debug: var=bigip_stuff
+
