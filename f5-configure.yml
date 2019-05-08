@@ -86,10 +86,8 @@
   - name: Collect BIG-IP facts
     bigip_device_facts:
       gather_subset:
-        - virtual-servers
-        - virtual-addresses
+        - devices
       provider: "{{ bigip_provider }}"
     delegate_to: localhost
     register: bigip_stuff
-  - debug: var=bigip_stuff
-
+  - debug: var=bigip_stuff.devices
