@@ -5,7 +5,7 @@
 
   vars:
     bigip_provider:
-      server: 10.1.1.245
+      server: 13.236.136.121
       user: admin
       password: admin
       validate_certs: no
@@ -16,34 +16,34 @@
     bigip_virtual_name: web-vip
 
   tasks:
-  - name: Add 1.1 as untagged interface for outside VLAN
-    bigip_vlan:
-        untagged_interface: 1.1
-        name: "outside"
-        provider: "{{ bigip_provider }}"
-    delegate_to: localhost
-  - name: Add 1.2 as untagged interface for inside VLAN
-    bigip_vlan:
-        untagged_interface: 1.2
-        name: "inside"
-        provider: "{{ bigip_provider }}"
-    delegate_to: localhost
-  - name: Create Self IP
-    bigip_selfip:
-      address: 10.1.10.1
-      name: outside-self1
-      netmask: 255.255.255.0
-      vlan: outside
-      provider: "{{ bigip_provider }}"
-    delegate_to: localhost
-  - name: Create Self IP
-    bigip_selfip:
-      address: 10.1.20.1
-      name: inside-self1
-      netmask: 255.255.255.0
-      vlan: inside
-      provider: "{{ bigip_provider }}"
-    delegate_to: localhost
+  #- name: Add 1.1 as untagged interface for outside VLAN
+  #  bigip_vlan:
+  #      untagged_interface: 1.1
+  #      name: "outside"
+  #      provider: "{{ bigip_provider }}"
+  #  delegate_to: localhost
+  #- name: Add 1.2 as untagged interface for inside VLAN
+  #  bigip_vlan:
+  #      untagged_interface: 1.2
+  #      name: "inside"
+  #      provider: "{{ bigip_provider }}"
+  #  delegate_to: localhost
+  #- name: Create Self IP
+  #  bigip_selfip:
+  #    address: 10.1.10.1
+  #    name: outside-self1
+  #    netmask: 255.255.255.0
+  #    vlan: outside
+  #    provider: "{{ bigip_provider }}"
+  #  delegate_to: localhost
+  #- name: Create Self IP
+  #  bigip_selfip:
+  #    address: 10.1.20.1
+  #    name: inside-self1
+  #    netmask: 255.255.255.0
+  #    vlan: inside
+  #    provider: "{{ bigip_provider }}"
+  #  delegate_to: localhost
   - name: Create pool
     bigip_pool:
       state: present
@@ -83,11 +83,11 @@
       name: MyiRule
       provider: "{{ bigip_provider }}"
     delegate_to: localhost
-  - name: Collect BIG-IP facts
-    bigip_device_facts:
-      gather_subset:
-        - devices
-      provider: "{{ bigip_provider }}"
-    delegate_to: localhost
-    register: bigip_stuff
-  - debug: var=bigip_stuff.devices
+  #- name: Collect BIG-IP facts
+  #  bigip_device_facts:
+  #    gather_subset:
+  #      - devices
+  #    provider: "{{ bigip_provider }}"
+  #  delegate_to: localhost
+  #  register: bigip_stuff
+  #- debug: var=bigip_stuff.devices
