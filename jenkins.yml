@@ -3,7 +3,7 @@
   tasks:
   - name: Kick off Jenkins Job
     uri: 
-      url: "http://jenkins:8080/job/Deploy-hello-world/build?token=608bbe693c9bffb47f2fbbfa971a2814"
+      url: "http://52.62.219.222:8080/job/AS3-deploy/build?token=fooble"
       method: POST
       user: admin
       password: password
