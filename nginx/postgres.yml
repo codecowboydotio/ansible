@@ -1,0 +1,52 @@
+- hosts:
+    "{{ target_hosts | default('null-hosts') }}"
+  become: true
+  tasks:
+  - name: install postgress on ec2 instance
+    package:
+      name: postgresql-server.x86_64
+      state: latest
+  - name: Install libselinux
+    package:
+      name: libselinux-python
+      state: present
+  - name: Install psycopg2
+    pip:
+      name: psycopg2-binary
+  - name: initialize the postgress DB
+    command: postgresql-setup initdb
+    ignore_errors: yes    
+  - name: Allow network connections to database
+    lineinfile:
+      path: /var/lib/pgsql/data/postgresql.conf
+      regexp: "#listen_addresses = 'localhost'"
+      line: "listen_addresses = '*'"
+  - name: Allow external port
+    lineinfile:
+      path: /var/lib/pgsql/data/postgresql.conf
+      regexp: "#port = 5432"
+      line: "port = 5432"
+  - name: Start the postgres service
+    service:
+      name: postgresql
+      state: started
+      enabled: yes
+    ignore_errors: yes
+  - name: Create a new Database
+    become: yes
+    become_user: postgres
+    postgresql_db:
+      name: naas
+      login_user: "postgres"
+      login_password: "postgres"
+    ignore_errors: yes
+  - name: create a test user to the database    
+    become: yes
+    become_user: postgres
+    postgresql_user:
+      db: "naas"
+      name: naas
+      password: naas
+      encrypted: yes
+      role_attr_flags: SUPERUSER,CREATEROLE,CREATEDB,INHERIT,LOGIN,REPLICATION,BYPASSRLS
+    ignore_errors: yes
