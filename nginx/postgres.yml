@@ -26,6 +26,10 @@
       path: /var/lib/pgsql/data/postgresql.conf
       regexp: "#port = 5432"
       line: "port = 5432"
+  - name: Allow external port
+    lineinfile:
+      path: /var/lib/pgsql/data/pg_hba.conf
+      line: "host	all	all	*	ident"
   - name: Start the postgres service
     service:
       name: postgresql
