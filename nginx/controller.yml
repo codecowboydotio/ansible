@@ -1,0 +1,21 @@
+- hosts:
+    "{{ target_hosts | default('null-hosts') }}"
+  become: true
+  tasks:
+  - name: install docker
+    package:
+      name: docker
+      state: present
+  - name: install docker-compose
+    package:
+      name: docker-compose
+      state: present
+  - name: Install libselinux
+    package:
+      name: libselinux-python
+      state: present
+  - name: Start docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes

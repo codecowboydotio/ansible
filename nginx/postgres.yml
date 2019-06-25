@@ -1,11 +1,21 @@
 - hosts:
-    "{{ target_hosts | default('null-hosts') }}"
+    "{{ target_hosts | default('postgres') }}"
   become: true
+  gather_facts: false
+
   tasks:
-  - name: install postgress on ec2 instance
+  - name: Install python
+    raw: dnf install python -y
+  - name: install repo
+    shell: dnf -y install https://download.postgresql.org/pub/repos/yum/reporpms/F-29-x86_64/pgdg-fedora-repo-latest.noarch.rpm
+  - name: install postgress client utilities
     package:
-      name: postgresql-server.x86_64
-      state: latest
+      name: postgresql95
+      state: present
+  - name: install postgress database server
+    package:
+      name: postgresql95-server
+      state: present
   - name: Install libselinux
     package:
       name: libselinux-python
@@ -14,28 +24,33 @@
     pip:
       name: psycopg2-binary
   - name: initialize the postgress DB
-    command: postgresql-setup initdb
+    command: /usr/pgsql-9.5/bin/postgresql95-setup initdb
     ignore_errors: yes    
   - name: Allow network connections to database
     lineinfile:
-      path: /var/lib/pgsql/data/postgresql.conf
+      path: /var/lib/pgsql/9.5/data/postgresql.conf
       regexp: "#listen_addresses = 'localhost'"
       line: "listen_addresses = '*'"
   - name: Allow external port
     lineinfile:
-      path: /var/lib/pgsql/data/postgresql.conf
+      path: /var/lib/pgsql/9.5/data/postgresql.conf
       regexp: "#port = 5432"
       line: "port = 5432"
   - name: Allow external port
     lineinfile:
-      path: /var/lib/pgsql/data/pg_hba.conf
-      line: "host	all	all	*	ident"
+      path: /var/lib/pgsql/9.5/data/pg_hba.conf
+      line: "host	all	all	10.1.1.157/32	password"
   - name: Start the postgres service
     service:
-      name: postgresql
+      name: postgresql-9.5.service
       state: started
       enabled: yes
     ignore_errors: yes
+  - name: Stop firewalld
+    service:
+      name: firewalld
+      state: stopped
+      enabled: no
   - name: Create a new Database
     become: yes
     become_user: postgres
