@@ -31,3 +31,6 @@
         state: started
     - name: Update index file
       command: mv /var/www/html/index.htm /var/www/html/index.html
+    - name: Disable SELinux
+      selinux:
+        state: disabled

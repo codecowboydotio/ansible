@@ -1,0 +1,40 @@
+- hosts:
+    "{{ target_hosts | default('nginx') }}"
+  become: true
+  gather_facts: true
+
+  tasks:
+  - name: Install python
+    raw: dnf install python -y
+  - name: install wget
+    package:
+      name: wget
+      state: present
+  - name: Install libselinux
+    package:
+      name: libselinux-python
+      state: present
+  - name: install repo
+    get_url:
+      url: https://cs.nginx.com/static/files/nginx-plus-7.4.repo
+      dest: /etc/yum.repos.d 
+    when: ansible_pkg_mgr == 'dnf'
+  - name: Copy file with owner and permissions
+    copy:
+      src: "{{ item }}"
+      dest: /etc/ssl/nginx/
+      owner: root
+      group: root
+      mode: '0644'
+    with_items:
+      - ~/nginx-repo.crt
+      - ~/nginx-repo.key
+  - name: install nginx-plus
+    package:
+      name: nginx-plus
+      state: present
+  - name: start nginx-plus
+    service: 
+      name: nginx
+      state: started
+      enabled: yes

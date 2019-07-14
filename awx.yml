@@ -67,6 +67,11 @@
         path: /awx/installer/inventory
         regexp: 'localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python"'
         line: 'localhost'
+    - name: change value of pg_port in installer inventory
+      lineinfile:
+        path: /awx/installer/inventory
+        regexp: 'pg_port=5432'
+        line: 'pg_port="5432"'
     - name: install AWX
       command:  ansible-playbook -i /awx/installer/inventory /awx/installer/install.yml 
     - name: Configure tower-cli
