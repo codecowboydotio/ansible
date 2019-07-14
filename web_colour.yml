@@ -1,0 +1,37 @@
+- hosts: "{{ target_hosts | default('webservers') }}"
+  become: yes
+  become_user: root
+  gather_facts: false
+
+  tasks:
+    - name: Install python
+      raw: dnf install python -y
+    - name: Install httpd
+      package: 
+        name: httpd
+        state: present
+    - name: install libselinux
+      package:
+        name: libselinux-python
+        state: present
+    - name: Start httpd
+      systemd:
+        name: httpd
+        state: started
+    - name: Start httpd
+      systemd:
+        name: httpd
+        enabled: yes
+    - name: stop firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+    - name: Remove index.html if it exists (good for re-run)
+      file:
+        path: /var/www/html/index.html
+        state: absent
+    - name: Add info to index.html
+      lineinfile:
+        path: /var/www/html/index.html
+        line: <HTML> <BODY bgcolor="{{ colour }}"> <H1>{{ colour }}</H1> </BODY> </HTML>
+        create: yes
