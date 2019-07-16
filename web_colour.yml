@@ -21,11 +21,13 @@
     - name: Start httpd
       systemd:
         name: httpd
+        state: started
         enabled: yes
     - name: stop firewalld
       systemd:
         name: firewalld
         state: stopped
+        enabled: no
     - name: Remove index.html if it exists (good for re-run)
       file:
         path: /var/www/html/index.html
@@ -33,5 +35,5 @@
     - name: Add info to index.html
       lineinfile:
         path: /var/www/html/index.html
-        line: <HTML> <BODY bgcolor="{{ colour }}"> <H1>{{ colour }}</H1> </BODY> </HTML>
+        line: <HTML><HEAD><meta http-equiv="refresh" content="1"></HEAD><BODY bgcolor="{{ colour }}"> <H1>{{ colour }}</H1> </BODY> </HTML>
         create: yes
