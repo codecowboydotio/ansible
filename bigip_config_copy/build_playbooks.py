@@ -74,7 +74,7 @@ with open('pools.json') as json_file:
 json_file.close()
 
 
-print "  - name: pools members in"
+print "  - name: jam pools members in"
 print "    bigip_pool_member:"
 print "      state: present"
 print "      pool: \"{{ item.name }}\""
@@ -116,7 +116,7 @@ with open('pools.json') as json_file:
 json_file.close()
 
 
-print "  - name: virtual servers"
+print "  - name: jam virtual servers in"
 print "    bigip_virtual_server:"
 print "      state: present"
 print "      name: \"{{ item.name }}\""

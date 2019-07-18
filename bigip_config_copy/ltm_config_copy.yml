@@ -47,5 +47,5 @@
   - name: run python script baby
     shell: python build_playbooks.py > config_load.yml
 
-#  - name: jam config in
-#    shell: ansible-playbook config_load.yml
+  - name: jam config in
+    shell: ansible-playbook config_load.yml
