@@ -120,17 +120,17 @@ print "  - name: virtual servers"
 print "    bigip_virtual_server:"
 print "      state: present"
 print "      name: \"{{ item.name }}\""
-print "      connection_limit: \"{{ item.connection_limit }}\""
 print "      mirror: \"{{ item.connection_mirror_enabled }}\""
 print "      pool: \"{{ item.pool }}\"" 
 print "      description: \"{{ item.description }}\""
 print "      destination: \"{{ item.destination_address }}\""
-print "      port: \"{{ destination_port }}\""
+print "      port: \"{{ item.destination_port }}\""
 print "      ip_protocol: \"{{ item.protocol }}\""
 print "      rate_limit: \"{{ item.rate_limit }}\""
 print "      rate_limit_dst_mask: \"{{ item.rate_limit_dst_mask }}\""
 print "      rate_limit_mode: \"{{ item.rate_limit_mode }}\""
 print "      rate_limit_src_mask: \"{{ item.rate_limitsrc_mask }}\""
+print "      port_translation: \"{{ item.translate_port }}\""
 print "      snat: \"{{ item.snat_type }}\""
 print "      source: \"{{ item.source }}\""
 print "      source_port: \"{{ item.source_port_behavior }}\"" 
@@ -145,7 +145,6 @@ with open('virtual.json') as json_file:
     data = json.load(json_file)
     for virt in data['virtual_servers']:
       name = str(virt['name'])
-      connection_limit = int(virt['connection_limit'])
       connection_mirror_enabled = str(virt['connection_mirror_enabled'])
       pool = str(virt['default_pool'])
       description = str(virt['description'])
@@ -153,18 +152,19 @@ with open('virtual.json') as json_file:
       destination_port = str(virt['destination_port'])
       protocol = str(virt['protocol'])
       rate_limit = int(virt['rate_limit'])
+      if rate_limit < 0:
+        rate_limit = 0
       rate_limit_dst_mask = int(virt['rate_limit_destination_mask'])
       rate_limit_mode = str(virt['rate_limit_mode'])
       rate_limitsrc_mask = int(virt['rate_limit_source_mask'])
       snat_type = str(virt['snat_type'])
+      translate_port = str(virt['translate_port'])
       source = str(virt['source_address'])
       source_port_behavior = str(virt['source_port_behavior'])
       type = str(virt['type'])
 
       print "      - name: " + name
-      print "        lb_method: " + lb_method
-      print "        connection_limit: ", connection_limit
-      print "        mirror: " + connection_mirror_enabled
+      print "        connection_mirror_enabled: " + connection_mirror_enabled
       print "        pool: " + pool
       print "        description: " + description
       print "        destination_address: " + destination_address
@@ -177,4 +177,5 @@ with open('virtual.json') as json_file:
       print "        snat_type: " + snat_type
       print "        source: " + source
       print "        source_port_behavior: " + source_port_behavior
+      print "        translate_port: " + translate_port
       print "        type: " + type
