@@ -30,7 +30,6 @@
       provider: "{{ bigip_provider }}"
     delegate_to: localhost
     register: pool_stuff
-  - debug: var=pool_stuff
   - copy: content="{{ pool_stuff }}" dest=./pools.json
 
   - name: Collect BIG-IP pool facts
@@ -40,12 +39,11 @@
       provider: "{{ bigip_provider }}"
     delegate_to: localhost
     register: virtual_stuff
-  - debug: var=virtual_stuff
   - copy: content="{{ virtual_stuff }}" dest=./virtual.json
 
 
   - name: run python script baby
     shell: python build_playbooks.py > config_load.yml
 
-  - name: jam config in
-    shell: ansible-playbook config_load.yml
+#  - name: jam config in
+#    shell: ansible-playbook config_load.yml
