@@ -1,0 +1,51 @@
+- name: Base VE config
+  hosts: "{{ target_hosts | default('f5') }}"
+  connection: local
+  gather_facts: False
+
+  vars:
+    bigip_provider:
+      server: 10.1.1.245
+      user: admin
+      password: admin
+      validate_certs: no
+
+  tasks:
+  - name: Collect BIG-IP node facts
+    bigip_device_facts:
+      gather_subset:
+        - nodes
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+    register: bigip_stuff
+  - name: Copy facts to file
+    copy: 
+      content: "{{ bigip_stuff }}" 
+      dest: ./nodes.json
+
+  - name: Collect BIG-IP pool facts
+    bigip_device_facts:
+      gather_subset:
+        - ltm-pools
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+    register: pool_stuff
+  - debug: var=pool_stuff
+  - copy: content="{{ pool_stuff }}" dest=./pools.json
+
+  - name: Collect BIG-IP pool facts
+    bigip_device_facts:
+      gather_subset:
+        - virtual-servers
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+    register: virtual_stuff
+  - debug: var=virtual_stuff
+  - copy: content="{{ virtual_stuff }}" dest=./virtual.json
+
+
+  - name: run python script baby
+    shell: python build_playbooks.py > config_load.yml
+
+#  - name: jam config in
+#    shell: ansible-playbook config_load.yml
