@@ -79,7 +79,7 @@ print "    bigip_pool_member:"
 print "      state: present"
 print "      pool: \"{{ item.name }}\""
 print "      address: \"{{ item.address }}\""
-print "      port: 80"
+print "      port: \"{{ item.port }}\""
 print "      provider: \"{{ new_bigip }}\""
 print "    delegate_to: localhost"
 print "    with_items: "
@@ -100,6 +100,8 @@ with open('pools.json') as json_file:
           priority_group = int(member['priority_group'])
           rate_limit = str(member['rate_limit'])
           ratio = int(member['ratio'])
+          full_path = str(member['full_path'])
+          just_port = full_path.split(":")
 
  	  print "      - name: " + name
           print "        lb_method: " + lb_method
@@ -112,6 +114,7 @@ with open('pools.json') as json_file:
           print "        priority_group: ", priority_group
           print "        rate_limit: ", rate_limit
           print "        ratio: ", ratio
+          print "        port: " + just_port[1]
 
 json_file.close()
 
