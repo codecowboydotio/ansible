@@ -7,10 +7,12 @@
   tasks:
     - name: Install python
       raw: dnf install python -y
-    - name: install git 
-      package:
-        name: git
-        state: present
+#    - name: install git 
+#      package:
+#        name: git
+#        state: present
+    - name: install git
+      shell: dnf -y install git
     - name: Install boto3
       pip:
         name: boto3

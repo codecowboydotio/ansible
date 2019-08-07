@@ -4,8 +4,6 @@
   gather_facts: true
 
   tasks:
-  - name: Install python
-    raw: dnf install python -y
   - name: install wget
     package:
       name: wget
@@ -14,11 +12,17 @@
     package:
       name: libselinux-python
       state: present
-  - name: install repo
+    when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
+  - name: install repo for redhat like systems
     get_url:
       url: https://cs.nginx.com/static/files/nginx-plus-7.4.repo
       dest: /etc/yum.repos.d 
-    when: ansible_pkg_mgr == 'dnf'
+    when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
+  - name: Install signing keys for apt systems
+    apt_key:
+      url: https://nginx.org/keys/nginx_signing.key
+      state: present
+    when: ansible_pkg_mgr == 'apt'
   - name: Copy file with owner and permissions
     copy:
       src: "{{ item }}"
@@ -29,6 +33,17 @@
     with_items:
       - ~/nginx-repo.crt
       - ~/nginx-repo.key
+  - name: install pre-reqs for apt systems
+    package:
+      name: "{{ item }}"
+    with_items:
+      - apt-transport-https
+      - lsb-release
+      - ca-certificates
+    when: ansible_pkg_mgr == 'apt'
+  - name: install repo on apt system
+    shell: printf "deb [trusted=yes] https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" | sudo tee /etc/apt/sources.list.d/nginx-plus.list
+    when: ansible_pkg_mgr == 'apt'
   - name: install nginx-plus
     package:
       name: nginx-plus

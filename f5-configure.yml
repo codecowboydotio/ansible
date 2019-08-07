@@ -14,6 +14,12 @@
     bigip_pool_member_port: 80
     bigip_vip_port: 80
     bigip_virtual_name: web-vip
+#    ntp_var: [1.1.1.1, 2.2.2.2, 3.3.3.3]
+    ntp_var:
+      - 1.1.1.1
+      - 2.2.2.2
+      - 3.3.3.3
+      - 4.4.4.4
 
   tasks:
   - name: Add 1.1 as untagged interface for outside VLAN
@@ -91,3 +97,35 @@
     delegate_to: localhost
     register: bigip_stuff
   - debug: var=bigip_stuff.devices
+  - name: set ntp server
+    bigip_device_ntp:
+      timezone: Australia/Victoria
+      ntp_servers:
+        "{{ ntp_var }}"
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Create a remote role
+    bigip_remote_role:
+      name: foo
+      line_order: 1
+      attribute_string: memberOf=cn=ldap_group,cn=ldap.group,ou=ldap
+      remote_access: yes
+      assigned_role: administrator
+      partition_access: all
+      terminal_access: none
+      state: present
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Create LDAP auth provider
+    bigip_device_auth_ldap:
+      bind_dn: foo
+      bind_password: foo
+      check_member_attr: true
+      fallback_to_local: yes
+      login_ldap_attr: samaccountname
+      port: 389
+      scope: sub
+      servers: a.a.com
+      state: present
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost

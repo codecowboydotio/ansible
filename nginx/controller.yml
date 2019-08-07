@@ -1,21 +1,39 @@
 - hosts:
-    "{{ target_hosts | default('null-hosts') }}"
+    "{{ target_hosts | default('controller') }}"
   become: true
   tasks:
+  - name: remove installed docker versions on debian systems
+    package:
+      name: "{{ item }}"
+      state: absent
+    with_items:
+      - docker 
+      - docker-engine 
+      - docker.io
+    when: ansible_pkg_mgr == 'apt'
   - name: install docker
     package:
       name: docker
       state: present
-  - name: install docker-compose
+    when: (ansible_distribution == "Fedora") or (ansible_distribution == "Centos")
+  - name: install docker debian like systems
     package:
-      name: docker-compose
+      name: "{{ item }}"
       state: present
+    with_items:
+      - docker.io
+    when: ansible_pkg_mgr == 'apt'
   - name: Install libselinux
     package:
       name: libselinux-python
       state: present
+    when: (ansible_distribution == "Fedora") or (ansible_distribution == "Centos")
   - name: Start docker service
     service:
       name: docker
       state: started
       enabled: yes
+  - name: Install docker compose (recentish version)
+    shell: curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - name: Make docker compose executable
+    shell: chmod +x /usr/local/bin/docker-compose
