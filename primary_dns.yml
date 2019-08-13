@@ -1,0 +1,51 @@
+- hosts: "{{ target_hosts | default('aws') }}"
+  become: yes
+  become_user: root
+
+  vars:
+    zone_name: "myzone.com"
+
+
+  tasks:
+    - name: Install bind and bind utils
+      package: 
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - bind
+        - bind-utils
+    - name: Update json blob
+      template:
+        src: primary_dns.j2
+        dest: primary_dns.db
+      delegate_to: localhost
+    - name: Copy file with owner and permissions
+      copy:
+        src: ./primary_dns.db
+        dest: /var/named/primary_dns.db
+        owner: root
+        group: named
+        mode: 0640
+    - name: Updated named.conf
+      blockinfile:
+        path: /etc/named.conf
+        block: |
+          zone "{{ zone_name }}" IN {
+            type master;
+            file "primary_dns.db";
+          };
+    - name: Update bind options
+      lineinfile:
+        path: /etc/named.conf
+        insertafter: 'allow-query     { localhost; };'
+        line: 'allow-transfer { any; };'
+    - name: Update bind options
+      lineinfile:
+        path: /etc/named.conf
+        regexp: 'allow-query     { localhost; };'
+        line: 'allow-query { any; };'
+    - name: Update bind options
+      lineinfile:
+        path: /etc/named.conf
+        regexp: 'listen-on port 53 { 127.0.0.1; };'
+        line: 'listen-on port 53 { any; };'

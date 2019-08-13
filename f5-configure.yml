@@ -1,6 +1,6 @@
 - name: Base VE config
   hosts: "{{ target_hosts | default('f5') }}"
-  connection: local
+#  connection: local
   gather_facts: False
 
   vars:
@@ -14,12 +14,7 @@
     bigip_pool_member_port: 80
     bigip_vip_port: 80
     bigip_virtual_name: web-vip
-#    ntp_var: [1.1.1.1, 2.2.2.2, 3.3.3.3]
-    ntp_var:
-      - 1.1.1.1
-      - 2.2.2.2
-      - 3.3.3.3
-      - 4.4.4.4
+    ntp_var: [1.1.1.1, 2.2.2.2, 3.3.3.3]
 
   tasks:
   - name: Add 1.1 as untagged interface for outside VLAN
@@ -126,6 +121,22 @@
       port: 389
       scope: sub
       servers: a.a.com
+      state: present
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Ensure a job that runs at 2 and 5 exists. Creates an entry like "0 5,2 * * ls -alh > /dev/null"
+    cron:
+      name: "check dirs"
+      minute: "0"
+      hour: "5,2"
+      job: "ls -alh > /dev/null"
+  - name: Add Device Group from A (Primary) node only
+    bigip_device_group:
+      name: foo
+      description: "Sync Failover between nodes"
+      auto_sync: yes
+      type: sync-failover
+      network_failover: yes
       state: present
       provider: "{{ bigip_provider }}"
     delegate_to: localhost
