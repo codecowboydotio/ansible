@@ -3,6 +3,9 @@
   become: true
   gather_facts: true
 
+  vars: 
+    swapi_client: swapi-spa.html
+
   tasks:
   - name: Install packages for redhat like systems
     package:
@@ -14,18 +17,42 @@
      - net-tools
      - httpd
     when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
-  - name: start services
+  - name: Install packages for debian like systems
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+     - apache2
+    when: (ansible_pkg_mgr == 'apt')
+  - name: start services redhat like systems
     service:
       name: "{{ item }}"
       state: started
     with_items:
       - httpd
+    when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
+  - name: start services debian like systems
+    service:
+      name: "{{ item }}"
+      state: started
+    with_items:
+      - apache2
+    when: (ansible_pkg_mgr == 'apt')
   - name: stop services
     service: 
       name: "{{ item }}"
       state: stopped
     with_items: 
       - firewalld
-  - name: turn off selinux
+    when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
+  - name: turn off selinux for redhat like systems
     selinux:
       state: disabled
+    when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
+  - name: copy files to remote webserver
+    copy:
+      src: "{{ swapi_client }}"
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
