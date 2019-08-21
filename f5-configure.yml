@@ -22,7 +22,7 @@
         untagged_interface: 1.1
         name: "outside"
         provider: "{{ bigip_provider }}"
-    delegate_to: localhost
+#    delegate_to: localhost
   - name: Add 1.2 as untagged interface for inside VLAN
     bigip_vlan:
         untagged_interface: 1.2
@@ -140,3 +140,36 @@
       state: present
       provider: "{{ bigip_provider }}"
     delegate_to: localhost
+  - name: Create a nameserver
+    bigip_dns_nameserver:
+      name: foo
+      address: 10.10.10.10
+      service_port: 53
+      state: present
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Create a DNS zone for DNS express
+    bigip_dns_zone:
+      name: foo.bar.com
+      dns_express:
+        enabled: yes
+        server: foo
+        allow_notify_from:
+          - 192.168.39.10
+        notify_action: consume
+        verify_tsig: no
+        response_policy: no
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+- name: Add an A record to organization.com zone
+  bigip_dns_record:
+    user: admin
+    password: admin
+    hostname: 10.1.1.245
+    type: A
+    zone: bar.com
+    state: present
+    options:
+      hostname: aaa.bar.com
+      ip_address: 10.1.1.1
+  delegate_to: localhost

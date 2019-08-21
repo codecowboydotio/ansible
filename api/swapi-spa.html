@@ -1,0 +1,61 @@
+<HTML>
+  <HEAD>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <meta name="viewport" content="width=device-width">
+    <style>
+      [v-cloak] {display: none}
+    </style>
+  </HEAD>
+  <BODY>
+   <div id="stuff" v-cloak>
+       <button @click="loadPeople">Search</button>
+       <p/>
+    <div v-for="(person, index) in people.slice(counter,counter+1)">
+       <img :src="imgurl + person.image"></img>
+       <p><strong>Index:</strong> {{ index }}</p>
+       <p><strong>Name:</strong> {{ person.name }}</p>
+       <p><strong>Gender:</strong> {{ person.gender }}</p>
+       <p><strong>Height:</strong> {{ person.height }}cm</p>
+       <p><strong>Year Born:</strong> {{ person.birth_year }}</p>
+       <br>
+    </div>
+    <div v-if="noResults">
+	Sorry, but no results were found. I blame the Borg.
+    </div>
+    <div v-if="searching">
+	<i>Searching...</i>
+    </div>
+   </div>
+   <script>
+      const url = 'http://10.1.10.100/people/';
+       new Vue({
+        el: '#stuff',
+        data: {
+          counter: -1,
+          people: [],
+          noResults:false,
+          searching:false
+        },
+        methods: {
+          loadPeople() {
+            this.searching = true;
+            this.imgurl = 'http://10.1.10.100/';
+            axios.get(url)
+              .then((response) => {
+                 this.searching = false;
+                 this.people = response.data;
+                 this.noResults = this.people.length === 0;
+                 if (this.counter < this.people.length) {
+                   this.counter++;
+                 } else {
+                   this.counter = 0;
+                 }
+                 console.log(response.data);
+              });
+          }
+        }
+});
+    </script>
+  </BODY>
+</HTML>

@@ -1,0 +1,58 @@
+- name: Base VE config
+  hosts: "{{ target_hosts | default('f5') }}"
+#  connection: local
+  gather_facts: False
+
+  vars:
+    bigip_provider:
+      server: 10.1.1.246
+      user: admin
+      password: admin
+      validate_certs: no
+    bigip_pool: swapi
+    bigip_pool_member: 10.1.20.170
+    bigip_pool_member_port: 3000
+    bigip_vip_port: 80
+    bigip_virtual_name: swapi
+
+  tasks:
+  - name: Create pool
+    bigip_pool:
+      state: present
+      name: "{{ bigip_pool }}"
+      partition: Common
+      lb_method: least-connections-member
+      slow_ramp_time: 120
+      monitors:
+        - http
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Add pool member
+    bigip_pool_member:
+      state: present
+      pool: "{{ bigip_pool }}"
+      partition: Common
+      host: "{{ bigip_pool_member }}"
+      port: "{{ bigip_pool_member_port }}"
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Add virtual server
+    bigip_virtual_server:
+      state: present
+      partition: Common
+      name: "{{ bigip_virtual_name }}"
+      destination: 10.1.10.100
+      port: "{{ bigip_vip_port }}"
+      pool: "{{ bigip_pool }}"
+      snat: Automap
+      description: Test Virtual Server
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Collect BIG-IP facts
+    bigip_device_facts:
+      gather_subset:
+        - devices
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+    register: bigip_stuff
+  - debug: var=bigip_stuff.devices

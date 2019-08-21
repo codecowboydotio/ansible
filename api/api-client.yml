@@ -1,0 +1,31 @@
+- hosts:
+    "{{ target_hosts | default('api-client') }}"
+  become: true
+  gather_facts: true
+
+  tasks:
+  - name: Install packages for redhat like systems
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+     - libselinux-python
+     - wget
+     - net-tools
+     - httpd
+    when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
+  - name: start services
+    service:
+      name: "{{ item }}"
+      state: started
+    with_items:
+      - httpd
+  - name: stop services
+    service: 
+      name: "{{ item }}"
+      state: stopped
+    with_items: 
+      - firewalld
+  - name: turn off selinux
+    selinux:
+      state: disabled
