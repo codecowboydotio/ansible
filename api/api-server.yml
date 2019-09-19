@@ -1,0 +1,53 @@
+- hosts:
+    "{{ target_hosts | default('api_server') }}"
+  become: true
+  gather_facts: true
+
+  tasks:
+  - name: Install packages for redhat like systems
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+#      - epel-release
+      - nodejs
+      - npm
+      - git
+      - python
+      - libselinux-python
+    when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
+  - name: Install packages for debian like systems
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - git
+      - python-dev
+      - nodejs
+      - npm
+    when: (ansible_pkg_mgr == 'apt')
+  - name: clone repo
+    git:
+      repo: https://github.com/codecowboydotio/swapi-json-server
+      dest: /swapi/
+  - name: Install pip
+    get_url:
+      url: https://bootstrap.pypa.io/get-pip.py
+      dest: /swapi/get-pip.py
+      mode: '0440'
+  - name: Run pip installer
+    shell: python /swapi/get-pip.py
+  - name: Install packages based on package.json.
+    npm:
+      path: /swapi
+  - name: Copy file with owner and permissions
+    copy:
+      src: ./swapi.service
+      dest: /etc/systemd/system/swapi.service
+      owner: root
+      group: root
+      mode: '0644'
+  - name: Start SWAPI service
+    service:
+      name: swapi
+      state: started

@@ -1,0 +1,14 @@
+[Unit]
+Description=swapi
+
+[Service]
+ExecStart=node app.js
+Restart=always
+User=root
+Group=root
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/swapi
+
+[Install]
+WantedBy=multi-user.target

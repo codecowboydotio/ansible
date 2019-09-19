@@ -10,7 +10,7 @@
       password: admin
       validate_certs: no
     bigip_pool: swapi
-    bigip_pool_member: 10.1.20.170
+    bigip_pool_member: 10.1.20.200
     bigip_pool_member_port: 3000
     bigip_vip_port: 80
     bigip_virtual_name: swapi

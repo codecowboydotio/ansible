@@ -6,6 +6,7 @@
   vars: 
     swapi_client: swapi-spa.html
 
+
   tasks:
   - name: Install packages for redhat like systems
     package:
@@ -38,13 +39,13 @@
     with_items:
       - apache2
     when: (ansible_pkg_mgr == 'apt')
-  - name: stop services
-    service: 
-      name: "{{ item }}"
-      state: stopped
-    with_items: 
-      - firewalld
-    when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
+#  - name: stop services
+#    service: 
+#      name: "{{ item }}"
+#      state: stopped
+#    with_items: 
+#      - firewalld
+#    when: (ansible_pkg_mgr == 'dnf') or (ansible_pkg_mgr == 'yum')
   - name: turn off selinux for redhat like systems
     selinux:
       state: disabled
