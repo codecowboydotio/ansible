@@ -3,8 +3,6 @@
   connection: local
   gather_facts: True
 
-  vars_files:
-    - ../roles/ec2/vars/aws_creds.yml
   vars:
     instance_type: t2.large
     security_group: sg-04f8a0a2b8893f983
@@ -18,8 +16,8 @@
   tasks:
     - name: Launch the new EC2 Instance
       ec2:
-        aws_access_key: "{{ ec2_access_key }}"
-        aws_secret_key: "{{ ec2_secret_key }}"
+        aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+        aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
         instance_type: "{{ instance_type }}"
         image: "{{ image }}"
         wait: true
