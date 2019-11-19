@@ -4,7 +4,7 @@
   gather_facts: True
 
   vars:
-    instance_type: t2.large
+    instance_type: t2.micro
     security_group: sg-04f8a0a2b8893f983
     subnet_id: subnet-00d6dc3b42d57fa0d
     image: ami-0024a0637256e4d4f
