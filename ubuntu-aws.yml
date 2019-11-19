@@ -24,7 +24,7 @@
         region: "{{ region }}"
         keypair: "{{ keypair }}"
         count: "{{count}}"
-        instance_tags: '{"owner":"svk"}'
+        instance_tags: '{"owner":"svk","purpose":"postgres"}'
         instance_initiated_shutdown_behavior: terminate
         vpc_subnet_id: "{{ subnet_id }}"
       register: ec2
