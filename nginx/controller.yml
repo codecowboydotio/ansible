@@ -1,6 +1,13 @@
 - hosts:
     "{{ target_hosts | default('controller') }}"
   become: true
+  gather_facts: true
+
+  vars:
+   the_password: password
+   controller_file: controller-installer-2.9.0.tar.gz
+
+
   tasks:
   - name: remove installed docker versions on debian systems
     package:
@@ -16,13 +23,22 @@
       name: docker
       state: present
     when: (ansible_distribution == "Fedora") or (ansible_distribution == "Centos")
-  - name: install docker debian like systems
-    package:
-      name: "{{ item }}"
-      state: present
+  - name: Change sshd configuration
+    replace:
+      path: /etc/ssh/sshd_config
+      regexp: "PasswordAuthentication no"
+      replace: "PasswordAuthentication yes"
+  - name: install docker
+    shell: "{{ item }}"
     with_items:
-      - docker.io
-    when: ansible_pkg_mgr == 'apt'
+      - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      - sudo apt-get update
+      - apt-cache policy docker-ce
+      - sudo apt-get install -y docker-ce
+      - useradd controller
+      - usermod -aG sudo controller
+      - systemctl restart ssh
   - name: Install libselinux
     package:
       name: libselinux-python
@@ -37,3 +53,26 @@
     shell: curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   - name: Make docker compose executable
     shell: chmod +x /usr/local/bin/docker-compose
+#  - name: generate variable
+#    shell: python -c 'import crypt; print crypt.crypt("{{the_password}}", "$1$SomeSalt$")'
+#    register: client_pass
+#  - debug: var=client_pass.stdout
+#  - name: add a user
+#    user:
+#      name: controller
+#      home: /home/controller
+#      createhome: yes
+#      update_password: on_create
+#      password: "{{client_pass.stdout}}"
+  - name: Copy file with owner and permissions
+    copy:
+      src: ./{{ controller_file }}
+      dest: /tmp/{{ controller_file }}
+      owner: root
+      group: root
+      mode: 0640
+  - name: Extract {{ controller_file }} into /tmp
+    unarchive:
+      src: /tmp/{{ controller_file }}
+      dest: /tmp
+      remote_src: yes

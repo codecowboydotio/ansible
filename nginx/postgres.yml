@@ -39,18 +39,18 @@
   - name: Allow external port
     lineinfile:
       path: /var/lib/pgsql/9.5/data/pg_hba.conf
-      line: "host	all	all	10.1.1.157/32	password"
+      line: "host	all	all	0.0.0.0/0	password"
   - name: Start the postgres service
     service:
       name: postgresql-9.5.service
       state: started
       enabled: yes
     ignore_errors: yes
-  - name: Stop firewalld
-    service:
-      name: firewalld
-      state: stopped
-      enabled: no
+  #- name: Stop firewalld
+  #  service:
+  #    name: firewalld
+  #    state: stopped
+  #    enabled: no
   - name: Create a new Database
     become: yes
     become_user: postgres

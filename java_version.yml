@@ -14,5 +14,5 @@
     failed_when: "java_oracle.rc == 2"
   - assert:
       that: 
-        - "java_oracle > 0"
+        - "java_oracle.rc > 0"
       msg: "Oracle java seems to be present"
