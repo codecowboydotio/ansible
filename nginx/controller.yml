@@ -39,6 +39,7 @@
       - useradd controller
       - usermod -aG sudo controller
       - systemctl restart ssh
+      - apt-get install jq
   - name: Install libselinux
     package:
       name: libselinux-python
