@@ -104,7 +104,7 @@
         - tower-cli inventory_source create --name "aws-source" --inventory "postgres" --source ec2 --credential "aws-account" --update-on-launch "true" --overwrite "true" --instance-filters "tag:purpose=postgres"
         - tower-cli inventory create --name controller --organization Default
         - tower-cli inventory_source create --name "aws-source" --inventory "controller" --source ec2 --credential "aws-account" --update-on-launch "true" --overwrite "true" --instance-filters "tag:purpose=controller"
-        - tower-cli job_template create --name "Fedora Server" --job-type run --inventory localhost --project ansible --playbook nginx/fedora-server.yml --credential fedora-ssh --ask-variables-on-launch "true" --extra-vars "target_hosts=all"
+        - tower-cli job_template create --name "Fedora Server" --job-type run --inventory localhost --project ansible --playbook nginx/fedora-server.yml --credential fedora-ssh --ask-variables-on-launch "true" --extra-vars "target_hosts=all tag_value=postgres"
         - tower-cli job_template associate_credential --credential aws-account --job-template "Fedora Server"
         - tower-cli job_template create --name "NGINX Controller Server" --job-type run --inventory localhost --project ansible --playbook nginx/ubuntu-aws.yml --credential ubuntu-ssh --ask-variables-on-launch "true" --extra-vars "target_hosts=all tag_value=controller"
         - tower-cli job_template associate_credential --credential aws-account --job-template "NGINX Controller Server"
