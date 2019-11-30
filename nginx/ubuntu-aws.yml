@@ -11,6 +11,7 @@
     keypair: svk-keypair-f5
     region: ap-southeast-2
     count: 1
+    purpose: foo
 
 
   tasks:
@@ -24,7 +25,7 @@
         region: "{{ region }}"
         keypair: "{{ keypair }}"
         count: "{{count}}"
-        instance_tags: '{"owner":"svk","purpose":"controller"}'
+        instance_tags: '{"owner":"svk"}'
         instance_initiated_shutdown_behavior: terminate
         vpc_subnet_id: "{{ subnet_id }}"
       register: ec2
@@ -34,3 +35,11 @@
       with_items: '{{ec2.instances}}'
     - name: ping to get facts
       ping:
+    - debug: var=ec2.instances[0].id
+    - name: update tags
+      ec2_tag:
+        region: "{{ region }}"
+        resource: "{{ ec2.instances[0].id }}"
+        state: present
+        tags:
+          purpose: "{{ tag_value }}"

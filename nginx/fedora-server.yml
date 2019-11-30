@@ -18,7 +18,6 @@
       ec2:
         aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
         aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
-#        group: "{{ security_group }}"
         instance_type: "{{ instance_type }}"
         image: "{{ image }}"
         wait: true
@@ -35,3 +34,10 @@
       with_items: '{{ec2.instances}}'
     - name: ping to get facts
       ping:
+    - name: update tags
+      ec2_tag:
+        region: "{{ region }}"
+        resource: "{{ ec2.instances[0].id }}"
+        state: present
+        tags:
+          purpose: "{{ tag_value }}"

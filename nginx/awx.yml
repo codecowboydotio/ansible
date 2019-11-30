@@ -1,0 +1,120 @@
+- hosts: "{{ target_hosts | default('aws') }}"
+  become: yes
+  become_user: root
+  gather_facts: false
+
+  tasks:
+    - name: Install python
+      raw: dnf install python -y
+    - name: install git
+      package: 
+        name: git
+        state: present
+    - name: install docker
+      package: 
+        name: docker
+        state: present
+    - name: install docker-py
+      pip:
+        name: docker-py
+    - name: install ansible-tower-cli
+      pip:
+        name: ansible-tower-cli
+    - name: install make
+      package: 
+        name: make
+        state: present
+    - name: install ansible
+      package: 
+        name: ansible
+        state: present
+    - name: pull AWX from git repo
+      git:
+        repo: https://github.com/ansible/awx
+        dest: /awx
+        force: yes
+        version: 2.1.2
+    - name: Start docker daemon
+      service:
+        name: docker
+        enabled: yes
+        state: started
+    - name: Install libselinux
+      package:
+        name: libselinux-python
+        state: present
+    - name: Change value of host key checking on AWX server
+      lineinfile:
+        path: /etc/ansible/ansible.cfg
+        regexp: '#host_key_checking = False'
+        line: 'host_key_checking = False' 
+    - name: generate ssh key for local use
+      command: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+      args:
+        creates: /root/.ssh/id_rsa
+    - name: configure local ssh access
+      copy: 
+        remote_src: True 
+        src: /root/.ssh/id_rsa.pub
+        dest: /root/.ssh/authorized_keys
+    - name: Add local key to authorized_keys
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+    - name: change value of host in installer inventory
+      lineinfile:
+        path: /awx/installer/inventory
+        regexp: 'localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python"'
+        line: 'localhost'
+    - name: change value of pg_port in installer inventory
+      lineinfile:
+        path: /awx/installer/inventory
+        regexp: 'pg_port=5432'
+        line: 'pg_port="5432"'
+    - name: install AWX
+      command:  ansible-playbook -i /awx/installer/inventory /awx/installer/install.yml 
+    - name: Configure tower-cli
+      shell: "{{ item }}" 
+      with_items:
+        - tower-cli config verify_ssl false
+        - tower-cli config username admin
+        - tower-cli config password password
+        - tower-cli config host http://127.0.0.1
+    - name: Check to ensure AWX has come up successfully - this can take some time.
+      shell: tower-cli project list
+      register: result
+      until: result.stdout.find("Demo Project") != -1
+      retries: 10
+      delay: 30
+    - name: Configure tower-cli
+      shell: "{{ item }}" 
+      with_items:
+        - tower-cli project list
+        - tower-cli project create --name ansible --scm-type git --scm-url http://github.com/codecowboydotio/ansible --organization Default --wait
+        - tower-cli credential create --name bigip-ssh --organization Default --credential-type Machine --inputs='{"username":"root","password":"default"}'
+        - tower-cli credential create --name ubuntu-ssh --organization Default --credential-type Machine --inputs='{"username":"ubuntu"}'
+        - tower-cli credential create --name fedora-ssh --organization Default --credential-type Machine --inputs='{"username":"fedora"}'
+        - tower-cli credential create --name "aws-account" --organization Default --credential-type "Amazon Web Services" --inputs='{"username":"aaa","password":"AAA"}'
+        - tower-cli inventory create --name localhost --organization Default
+        - tower-cli host create --name localhost --inventory localhost
+        - tower-cli inventory create --name bigip --organization Default
+        - tower-cli host create --name 10.1.1.245 --inventory bigip
+        - tower-cli inventory create --name postgres --organization Default
+        - tower-cli inventory_source create --name "aws-source" --inventory "postgres" --source ec2 --credential "aws-account" --update-on-launch "true" --overwrite "true" --instance-filters "tag:purpose=postgres"
+        - tower-cli inventory create --name controller --organization Default
+        - tower-cli inventory_source create --name "aws-source" --inventory "controller" --source ec2 --credential "aws-account" --update-on-launch "true" --overwrite "true" --instance-filters "tag:purpose=controller"
+        - tower-cli job_template create --name "Fedora Server" --job-type run --inventory localhost --project ansible --playbook nginx/fedora-server.yml --credential fedora-ssh --ask-variables-on-launch "true" --extra-vars "target_hosts=all"
+        - tower-cli job_template associate_credential --credential aws-account --job-template "Fedora Server"
+        - tower-cli job_template create --name "NGINX Controller Server" --job-type run --inventory localhost --project ansible --playbook nginx/ubuntu-aws.yml --credential ubuntu-ssh --ask-variables-on-launch "true" --extra-vars "target_hosts=all tag_value=controller"
+        - tower-cli job_template associate_credential --credential aws-account --job-template "NGINX Controller Server"
+        - tower-cli job_template create --name "NGINX Plus Server" --job-type run --inventory localhost --project ansible --playbook nginx/ubuntu-aws.yml --credential ubuntu-ssh --ask-variables-on-launch "true" --extra-vars "target_hosts=all tag_value=nplus"
+        - tower-cli job_template associate_credential --credential aws-account --job-template "NGINX Plus Server"
+        - tower-cli job_template create --name "Postgres Install" --job-type run --inventory postgres --project ansible --playbook nginx/postgres.yml --credential fedora-ssh --ask-variables-on-launch "true" --extra-vars "target_hosts=all"
+        - tower-cli job_template associate_credential --credential aws-account --job-template "Postgres Install"
+        - tower-cli job_template delete --name "Demo Job Template"
+        - tower-cli credential delete --name "Demo Credential"
+        - tower-cli inventory delete --name "Demo Inventory"
+
+    - name: Install F5 SDK
+      shell: docker exec awx_task pip install f5-sdk
