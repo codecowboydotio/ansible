@@ -15,6 +15,10 @@
 
 
   tasks:
+    - name: Check all vars are present
+      assert:
+        that:
+          - tag_value != ""
     - name: Launch the new EC2 Instance
       ec2:
         aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"

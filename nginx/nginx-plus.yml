@@ -48,10 +48,10 @@
     package:
       name: nginx-plus
       state: present
-  - name: stop firewalld
-    service: 
-      name: firewalld
-      state: stopped
+#  - name: stop firewalld
+#    service: 
+#      name: firewalld
+#      state: stopped
   - name: turn off selinux
     selinux:
       state: disabled
