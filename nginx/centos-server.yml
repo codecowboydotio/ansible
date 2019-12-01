@@ -1,0 +1,43 @@
+- name: Provision ec2 instances based on the environment
+  hosts: localhost
+  connection: local
+  gather_facts: True
+
+  vars:
+    instance_type: t2.micro
+    security_group: sg-04f8a0a2b8893f983
+    subnet_id: subnet-00d6dc3b42d57fa0d
+    image: ami-00240f6f25c5a080b
+    keypair: svk-keypair-f5
+    region: ap-southeast-2
+    count: 1
+
+
+  tasks:
+    - name: Launch the new EC2 Instance
+      ec2:
+        aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+        aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ image }}"
+        wait: true
+        region: "{{ region }}"
+        keypair: "{{ keypair }}"
+        count: "{{count}}"
+        instance_tags: '{"owner":"svk","purpose":"postgres"}'
+        instance_initiated_shutdown_behavior: terminate
+        vpc_subnet_id: "{{ subnet_id }}"
+      register: ec2
+    - debug: var=ec2.instances[0].public_ip
+    - name: Wait for machines to come up completely
+      wait_for: host={{ item.public_ip }} port=22
+      with_items: '{{ec2.instances}}'
+    - name: ping to get facts
+      ping:
+    - name: update tags
+      ec2_tag:
+        region: "{{ region }}"
+        resource: "{{ ec2.instances[0].id }}"
+        state: present
+        tags:
+          purpose: "{{ tag_value }}"
