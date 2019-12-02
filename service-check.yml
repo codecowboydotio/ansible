@@ -1,0 +1,15 @@
+- name: Provision ec2 instances based on the environment
+  hosts: localhost
+  connection: local
+  gather_facts: True
+
+  vars:
+    count: 1
+
+
+  tasks:
+    - name: Launch the new EC2 Instance
+      service_facts:
+      register: foo
+    - debug:
+        var: foo.ansible_facts.services["firewalld.service"].state
