@@ -1,0 +1,15 @@
+- hosts:
+    "{{ target_hosts | default('aws') }}"
+  become: true
+  gather_facts: false
+  connection: local
+
+  tasks:
+  - name: poke nginx files into tower
+    copy:
+      src: "{{ item }}"
+      dest: /foo/
+      mode: 644
+    with_items:
+      - ~/nginx-repo.crt
+      - ~/nginx-repo.key
