@@ -39,8 +39,8 @@
       group: root
       mode: '0644'
     with_items:
-      - ./nginx-repo.crt
-      - ./nginx-repo.key
+      - nginx-repo.crt
+      - nginx-repo.key
     delegate_to: localhost
   - name: install pre-reqs for apt systems
     package:
