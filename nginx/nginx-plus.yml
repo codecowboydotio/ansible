@@ -6,12 +6,12 @@
   tasks:
   - name: foo
     shell: hostname
-    register: hostname-var
-  - debug: var=hostname-var
+    register: hostnamevar
+  - debug: var=hostnamevar
   - name: foo2
-    shell: 'ls -la'
-    register: dir-output
-  - debug: var=dir-output
+    shell: ls -la
+    register: diroutput
+  - debug: var=diroutput
   - name: install wget
     package:
       name: wget
