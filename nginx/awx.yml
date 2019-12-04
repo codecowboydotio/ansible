@@ -6,43 +6,41 @@
   tasks:
     - name: Install python
       raw: dnf install python -y
-    - name: install git
-      package: 
-        name: git
+    - name: install packages
+      package:
+        name: "{{ item }}"
         state: present
-    - name: install docker
-      package: 
-        name: docker
+      with_items:
+        - python
+        - python-devel
+        - libselinux-python
+        - git
+        - ansible
+        - redhat-rpm-config
+        - docker
+        - docker-compose
+    - name: install the 'Development tools' package group
+      dnf:
+        name: '@Development tools'
         state: present
-    - name: install docker-py
+    - name: upgrade pip
       pip:
-        name: docker-py
+        name: pip
+        extra_args: --upgrade
     - name: install ansible-tower-cli
       pip:
-        name: ansible-tower-cli
-    - name: install make
-      package: 
-        name: make
-        state: present
-    - name: install ansible
-      package: 
-        name: ansible
-        state: present
+        name: ['ansible-tower-cli', 'docker', 'docker-compose']
     - name: pull AWX from git repo
       git:
         repo: https://github.com/ansible/awx
         dest: /awx
         force: yes
-        version: 2.1.2
+        #version: 2.1.2
     - name: Start docker daemon
       service:
         name: docker
         enabled: yes
         state: started
-    - name: Install libselinux
-      package:
-        name: libselinux-python
-        state: present
     - name: Change value of host key checking on AWX server
       lineinfile:
         path: /etc/ansible/ansible.cfg
@@ -62,16 +60,23 @@
         user: root
         state: present
         key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
-    - name: change value of host in installer inventory
+    - name: Update inventory file
       lineinfile:
         path: /awx/installer/inventory
-        regexp: 'localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python"'
-        line: 'localhost'
-    - name: change value of pg_port in installer inventory
-      lineinfile:
-        path: /awx/installer/inventory
-        regexp: 'pg_port=5432'
-        line: 'pg_port="5432"'
+        regexp: '#project_data_dir=/var/lib/awx/projects'
+        line: 'project_data_dir=/var/lib/awx/projects'
+    #- name: change value of host in installer inventory
+    #  lineinfile:
+    #    path: /awx/installer/inventory
+    #    regexp: 'localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python"'
+    #    line: 'localhost'
+    #- name: change value of pg_port in installer inventory
+    #  lineinfile:
+    #    path: /awx/installer/inventory
+    #    regexp: 'pg_port=5432'
+    #    line: 'pg_port="5432"'
+    - name: Change selinux enforcing to permissive
+      shell: setenforce permissive
     - name: install AWX
       command:  ansible-playbook -i /awx/installer/inventory /awx/installer/install.yml 
     - name: Configure tower-cli
@@ -95,6 +100,7 @@
         - tower-cli credential create --name bigip-ssh --organization Default --credential-type Machine --inputs='{"username":"root","password":"default"}'
         - tower-cli credential create --name ubuntu-ssh --organization Default --credential-type Machine --inputs='{"username":"ubuntu"}'
         - tower-cli credential create --name fedora-ssh --organization Default --credential-type Machine --inputs='{"username":"fedora"}'
+        - tower-cli credential create --name centos-ssh --organization Default --credential-type Machine --inputs='{"username":"centos"}'
         - tower-cli credential create --name "aws-account" --organization Default --credential-type "Amazon Web Services" --inputs='{"username":"aaa","password":"AAA"}'
         - tower-cli inventory create --name localhost --organization Default
         - tower-cli host create --name localhost --inventory localhost
@@ -116,9 +122,11 @@
         - tower-cli job_template associate_credential --credential aws-account --job-template "NGINX Plus Server"
         - tower-cli job_template create --name "Postgres Install" --job-type run --inventory postgres --project ansible --playbook nginx/postgres.yml --credential fedora-ssh --ask-variables-on-launch "true" --extra-vars "target_hosts=all"
         - tower-cli job_template associate_credential --credential aws-account --job-template "Postgres Install"
+        - tower-cli job_template create --name "NGINX Plus Install" --job-type run --inventory nplus --project ansible --playbook nginx/nginx-plus.yml --credential centos-ssh --ask-variables-on-launch "true" --extra-vars "target_hosts=all"
+        - tower-cli job_template associate_credential --credential aws-account --job-template "NGINX Plus Install"
         - tower-cli job_template delete --name "Demo Job Template"
         - tower-cli credential delete --name "Demo Credential"
         - tower-cli inventory delete --name "Demo Inventory"
 
-    - name: Install F5 SDK
-      shell: docker exec awx_task pip install f5-sdk
+#    - name: Install F5 SDK
+#      shell: docker exec awx_task pip install f5-sdk
