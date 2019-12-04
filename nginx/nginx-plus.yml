@@ -4,6 +4,14 @@
   gather_facts: true
 
   tasks:
+  - name: foo
+    shell: hostname
+    register: hostname-var
+  - debug: var=hostname-var
+  - name: foo2
+    shell: 'ls -la'
+    register: dir-output
+  - debug: var=dir-output
   - name: install wget
     package:
       name: wget
