@@ -11,5 +11,5 @@
       dest: /foo/
       mode: 644
     with_items:
-      - ~/nginx-repo.crt
-      - ~/nginx-repo.key
+      - nginx-repo.crt
+      - nginx-repo.key
