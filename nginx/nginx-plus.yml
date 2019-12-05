@@ -24,8 +24,8 @@
       state: present
     when: ansible_pkg_mgr == 'apt'
   - name: scp stuff
-    synchronize:
-      src: /tmp/files
+    copy:
+      src: /tmp/files/foo
       dest: /tmp
   - name: Copy file with owner and permissions
     copy:
