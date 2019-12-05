@@ -24,7 +24,9 @@
       state: present
     when: ansible_pkg_mgr == 'apt'
   - name: scp stuff
-    shell: scp files/nginx* centos@"{{ inventory_hostname }}":/tmp
+    synchronize:
+      src: files/
+      dest: /tmp
   - name: Copy file with owner and permissions
     copy:
       src: "{{ item }}"
