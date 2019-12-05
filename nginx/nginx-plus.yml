@@ -23,8 +23,11 @@
       url: https://nginx.org/keys/nginx_signing.key
       state: present
     when: ansible_pkg_mgr == 'apt'
-  - name foo
-    shell: cp files/* /
+  - name: copy file at root dir of flash in slot 3 of sw1(ios)
+    net_put:
+      src: files/nginx-repo.crt
+      protocol: sftp
+      dest : /foo.txt
   - name: Copy file with owner and permissions
     copy:
       src: "{{ item }}"
