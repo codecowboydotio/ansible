@@ -4,14 +4,6 @@
   gather_facts: true
 
   tasks:
-  - name: foo
-    shell: hostname
-    register: hostnamevar
-  - debug: var=hostnamevar
-  - name: foo2
-    shell: ls -la
-    register: diroutput
-  - debug: var=diroutput
   - name: install wget
     package:
       name: wget
@@ -41,7 +33,6 @@
     with_items:
       - nginx-repo.crt
       - nginx-repo.key
-    delegate_to: localhost
   - name: install pre-reqs for apt systems
     package:
       name: "{{ item }}"
