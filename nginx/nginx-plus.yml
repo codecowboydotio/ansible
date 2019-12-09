@@ -35,8 +35,8 @@
       group: root
       mode: '0644'
     with_items:
-      - nginx-repo.crt
-      - nginx-repo.key
+      - files/nginx-repo.crt
+      - files/nginx-repo.key
   - name: install pre-reqs for apt systems
     package:
       name: "{{ item }}"
