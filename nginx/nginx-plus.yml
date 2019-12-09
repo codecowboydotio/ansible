@@ -23,10 +23,6 @@
       url: https://nginx.org/keys/nginx_signing.key
       state: present
     when: ansible_pkg_mgr == 'apt'
-  - name: scp stuff
-    copy:
-      src: /tmp/files/foo
-      dest: /tmp
   - name: Copy file with owner and permissions
     copy:
       src: "{{ item }}"
