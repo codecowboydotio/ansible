@@ -23,16 +23,16 @@
       url: https://nginx.org/keys/nginx_signing.key
       state: present
     when: ansible_pkg_mgr == 'apt'
-#  - name: Copy file with owner and permissions
-#    copy:
-#      src: "{{ item }}"
-#      dest: /etc/ssl/nginx/
-#      owner: root
-#      group: root
-#      mode: '0644'
-#    with_items:
-#      - /foo/nginx-repo.crt
-#      - /foo/nginx-repo.key
+  - name: Copy file with owner and permissions
+    copy:
+      src: "{{ item }}"
+      dest: /etc/ssl/nginx/
+      owner: root
+      group: root
+      mode: '0644'
+    with_items:
+      - /foo/nginx-repo.crt
+      - /foo/nginx-repo.key
   - name: install pre-reqs for apt systems
     package:
       name: "{{ item }}"
