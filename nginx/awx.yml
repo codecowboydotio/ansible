@@ -3,6 +3,10 @@
   become_user: root
   gather_facts: false
 
+  vars:
+    nginx_cert: files/nginx-repo.crt
+    nginx_key: files/nginx-repo.key
+
   tasks:
     - name: Install python
       raw: dnf install python -y
@@ -92,6 +96,26 @@
       until: result.stdout.find("Demo Project") != -1
       retries: 10
       delay: 30
+    - name: poke nginx files into tower
+      copy:
+        src: "{{ nginx_cert }}"
+        dest: /foo/
+        mode: 644
+    - name: poke nginx files into tower
+      copy:
+        src: "{{ nginx_key }}"
+        dest: /foo/nginx-repo.key
+        #dest: /var/lib/awx/projects/_8__ansible/nginx/files/
+        mode: 644
+    - name: create dir in task container
+      shell: docker exec awx_task mkdir /foo
+    - name: copy file
+      shell: docker cp /foo/nginx-repo.key awx_task:/foo
+    - name: copy file
+      shell: docker cp /foo/nginx-repo.crt awx_task:/foo
+    - name: set permissions on copied files
+      shell: docker exec -it awx_task chmod 644 /foo/nginx-repo*
+
     - name: Configure tower-cli
       shell: "{{ item }}" 
       with_items:

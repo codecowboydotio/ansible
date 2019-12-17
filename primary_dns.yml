@@ -3,10 +3,14 @@
   become_user: root
 
   vars:
-    zone_name: "myzone.com"
+    #zone_name: "svkcode.org"
 
 
   tasks:
+    - name: Check all vars are present
+      assert:
+        that:
+          - zone_name != ""
     - name: Install bind and bind utils
       package: 
         name: "{{ item }}"
@@ -19,10 +23,22 @@
         src: primary_dns.j2
         dest: primary_dns.db
       delegate_to: localhost
+    - name: Update gslb zone file
+      template:
+        src: gslb.j2
+        dest: gslb.db
+      delegate_to: localhost
     - name: Copy file with owner and permissions
       copy:
         src: ./primary_dns.db
         dest: /var/named/primary_dns.db
+        owner: root
+        group: named
+        mode: 0640
+    - name: Copy gslb zone file into place
+      copy:
+        src: ./gslb.db
+        dest: /var/named/gslb.db
         owner: root
         group: named
         mode: 0640
@@ -33,6 +49,10 @@
           zone "{{ zone_name }}" IN {
             type master;
             file "primary_dns.db";
+          };
+          zone "gslb.{{ zone_name }}" IN {
+            type master;
+            file "gslb.db";
           };
     - name: Update bind options
       lineinfile:

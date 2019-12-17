@@ -1,18 +1,21 @@
 ; SOA Record
 {{ zone_name }}.	60	 IN 	SOA	{{ inventory_hostname }}.	dns.{{ zone_name }}. (
-					01
-					28800
-					7200
-					604800
-					3600
+					01 ;serial
+					300 ;refresh
+					300 ;retry
+					300 ;expire
+					300 ;minimum
 					) 
+
+
+@	60	 IN 	NS	{{ inventory_hostname }}.
+@	60	 IN 	NS	ns1.f5cloudservices.com.
+@	60	 IN 	NS	ns2.f5cloudservices.com.
+gslb.{{ zone_name }}.	60	 IN 	NS	ns1.f5cloudservices.com.
+gslb.{{ zone_name }}.	60	 IN 	NS	ns2.f5cloudservices.com.
 
 ; A Records
 @	60	 IN 	A	1.1.1.1
 
 ; CNAME Records
 www	60	 IN 	CNAME	@
-
-@	60	 IN 	NS	{{ inventory_hostname }}.
-@	60	 IN 	NS	ns1.f5cloudservices.com.
-@	60	 IN 	NS	ns2.f5cloudservices.com.
