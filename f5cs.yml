@@ -8,6 +8,8 @@
     api_version: v1
     password: 'somepassword'
     username: 'someusername'
+    zone_name: 'somezone'
+    master_server: '1.1.1.1'
 
 
   tasks:
@@ -19,7 +21,7 @@
         body_format: json
       delegate_to: localhost
       register: cloud_access_token
-    - debug: var=cloud_access_token.json.access_token
+    #- debug: var=cloud_access_token.json.access_token
     - name: get account details
       uri:
         url: https://{{ api_url }}/{{ api_version }}/svc-account/user
@@ -29,7 +31,7 @@
         body_format: json
       delegate_to: localhost
       register: user_info
-    - debug: var=user_info.json.id
+    #- debug: var=user_info.json.id
     - name: get subscriptions
       uri:
         url: https://{{ api_url }}/{{ api_version }}/svc-subscription/subscriptions?account_id={{ user_info.json.primary_account_id }}
@@ -39,7 +41,7 @@
         body_format: json
       delegate_to: localhost
       register: subscription_info
-    - debug: var=subscription_info
+    #- debug: var=subscription_info
     - name: get catalogue items
       uri:
         url: https://{{ api_url }}/{{ api_version }}/svc-catalog/catalogs
@@ -49,24 +51,49 @@
         body_format: json
       delegate_to: localhost
       register: catalogue_info
-    - debug: var=catalogue_info.json.Catalogs
-    - name: do stuf
-      debug:
-        msg: "Item={{ item }} Key={{ item.key }} value={{ item.value }}"
-      with_dict: "{{ catalogue_info.json.Catalogs }}"
-      when: (item.key  == 'name' and item.value == 'DNS') 
-    - name: do stuf
-      debug:
-        msg: "{{ catalogue_info.json.Catalogs | json_query(query) }}"
-      vars: 
-        query: "[].name"
-    - name: do stuf
-      debug:
-        msg: "{{ catalogue_info.json.Catalogs | json_query(query) }}"
-      vars: 
-        query: "[].{name: name, catalog_id: catalog_id}"
-    - name: do stuf
-      debug:
-        msg: "{{ catalogue_info.json.Catalogs | json_query(query) }}"
+    #- debug: var=catalogue_info.json.Catalogs
+    - name: Get catalog ID for DNS service
+      set_fact:
+        catalog_id: "{{ item.catalog_id }}"
+      with_items:
+        "{{ catalogue_info.json.Catalogs | json_query(query) }}"
       vars: 
         query: "[].{name: name, catalog_id: catalog_id} | [?name=='DNS']"
+    #- debug: var=catalog_id
+
+    - name: send create request
+      uri:
+        url: https://{{ api_url}}/{{ api_version }}/svc-subscription/subscriptions
+        headers:
+          Authorization: 'Bearer {{ cloud_access_token.json.access_token }}'
+        method: POST
+        body_format: json
+        body: {
+                 "account_id": "{{ user_info.json.primary_account_id }}",
+                    "catalog_id": "{{ catalog_id }}",
+                    "plan_id": "p-__free_dns",
+                    "service_instance_name": "goober",
+                    "service_type": "adns",
+                    "configuration": {
+                        "schema_version": "0.1",
+                        "adns_service": {
+                            "enable": true,
+                            "zone": "{{ zone_name }}",
+                            "master_servers": [
+                                "{{ master_server }}"
+                            ]
+                        }
+                    }
+              }
+      delegate_to: localhost
+      register: create_output
+    #- debug: var=create_output.json.subscription_id
+    - name: Activate new zone
+      uri:
+        url: https://{{ api_url }}/{{ api_version }}/svc-subscription/subscriptions/{{ create_output.json.subscription_id }}/activate
+        headers: 
+          Authorization: 'Bearer {{ cloud_access_token.json.access_token }}'
+        method: POST
+      delegate_to: localhost
+      register: activate_output
+    #- debug: var=activate_output
