@@ -1,0 +1,26 @@
+- name: Provision ec2 instances based on the environment
+  hosts: all
+  #connection: local
+  gather_facts: True
+
+  vars:
+    instance_id: "{{ ec2_id }}"
+    original_tag: "{{ ec2_tag_application }}"
+    new_tag: prod
+
+  tasks:
+  - name: get variables
+    debug: var=fooble
+  - name: get variables
+    debug: var=original_tag
+  - name: get variables
+    debug: var=new_tag
+  - name: Update tag
+    ec2_tag:
+      aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+      aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+      region: ap-southeast-2
+      resource: "{{ instance_id }}"
+      state: present
+      tags:
+        application: "{{ new_tag }}"
