@@ -6,13 +6,8 @@
   vars:
     instance_id: "{{ ec2_id }}"
     original_tag: "{{ ec2_tag_application }}"
-    new_tag: prod
 
   tasks:
-  - name: get variables
-    debug: var=fooble 
-  - name: get variables
-    debug: var=original_tag
   - name: get variables
     debug: var=new_tag
   - name: Update tag
