@@ -6,14 +6,23 @@
   vars:
     api_url: 'api.cloudservices.f5.com'
     api_version: v1
-    password: 'somepassword'
-    username: 'someusername'
-    domain_name: 'somedomain'
+    #password: 'somepassword'
+    #username: 'someusername'
+    #domain_name: 'somedomain'
     aws_region: 'ap-southeast-2'
     debug: 'false'
 
 
   tasks:
+    - name: Check that we have all of the variables that we need
+      fail:
+        msg: "Required variable {{ item }} has not been set"
+      when: 
+        vars[item] is undefined
+      loop:
+        - username
+        - password
+        - domain_name
     - name: login to cloud services
       uri:
         url: https://{{ api_url }}/{{ api_version }}/svc-auth/login
