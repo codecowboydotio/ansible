@@ -22,7 +22,10 @@
         body_format: json
       delegate_to: localhost
       register: cloud_access_token
-    - debug: var=cloud_access_token.json.access_token
+    - name: Show access token (debug only) 
+      debug: 
+        msg: 
+        - Access Token {{ cloud_access_token.json.access_token }}
       when: debug == 'true'
     - name: get account details
       uri:
@@ -33,9 +36,10 @@
         body_format: json
       delegate_to: localhost
       register: user_info
-    - debug: var=user_info.json.id
+    - name: Show user information (debug only) 
+      debug: var=user_info
       when: debug == 'true'
-    - name: get subscriptions
+    - name: get current subscriptions
       uri:
         url: https://{{ api_url }}/{{ api_version }}/svc-subscription/subscriptions?account_id={{ user_info.json.primary_account_id }}
         headers: 
@@ -44,7 +48,8 @@
         body_format: json
       delegate_to: localhost
       register: subscription_info
-    - debug: var=subscription_info
+    - name: Show current subscriptions (debug only) 
+      debug: var=subscription_info
       when: debug == 'true'
     - name: get catalogue items
       uri:
@@ -55,7 +60,8 @@
         body_format: json
       delegate_to: localhost
       register: catalogue_info
-    - debug: var=catalogue_info.json.Catalogs
+    - name: Show catalogue info (debug only) 
+      debug: var=catalogue_info.json.Catalogs
       when: debug == 'true'
     - name: Get catalog ID for EAP service
       set_fact:
@@ -65,9 +71,11 @@
         "{{ catalogue_info.json.Catalogs | json_query(query) }}"
       vars: 
         query: "[].{service_type: service_type, catalog_id: catalog_id} | [?service_type=='waf']"
-    - debug: var=catalog_id
+    - name: Show catalog id for service (debug only) 
+      debug: var=catalog_id
       when: debug == 'true'
-    - debug: var=service_type
+    - name: Show service type (debug only) 
+      debug: var=service_type
       when: debug == 'true'
 
     - name: send create request
@@ -228,7 +236,8 @@
              }
       delegate_to: localhost
       register: create_output
-    - debug: var=create_output.json.subscription_id
+    - name: Show create request output (debug only) 
+      debug: var=create_output.json.subscription_id
       when: debug == 'true'
     - name: Activate new service
       uri:
@@ -238,9 +247,10 @@
         method: POST
       delegate_to: localhost
       register: activate_output
-    - debug: var=activate_output
+    - name: Show activation output of new service (debug only) 
+      debug: var=activate_output
       when: debug == 'true'
-    - name: get current subscription
+    - name: get new subscription information post activation (has CNAME value)
       uri:
         url: https://{{ api_url }}/{{ api_version }}/svc-subscription/subscriptions/{{ create_output.json.subscription_id }}
         headers: 
@@ -249,5 +259,7 @@
         body_format: json
       delegate_to: localhost
       register: newsuboutput
-    - debug: var=newsuboutput.json.configuration.details.CNAMEValue
-      when: debug == 'true'
+    - name: Print CNAME 
+      debug: 
+        msg: 
+        - The CNAME record created for your EAP domain is {{ newsuboutput.json.configuration.details.CNAMEValue }}
