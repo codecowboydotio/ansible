@@ -1,0 +1,253 @@
+- hosts: "{{ target_hosts | default('aws') }}"
+  become: yes
+  become_user: root
+  connection: local
+
+  vars:
+    api_url: 'api.cloudservices.f5.com'
+    api_version: v1
+    password: 'somepassword'
+    username: 'someusername'
+    domain_name: 'somedomain'
+    aws_region: 'ap-southeast-2'
+    debug: 'false'
+
+
+  tasks:
+    - name: login to cloud services
+      uri:
+        url: https://{{ api_url }}/{{ api_version }}/svc-auth/login
+        body: {"username":"{{ username }}","password":"{{ password }}"}
+        method: POST
+        body_format: json
+      delegate_to: localhost
+      register: cloud_access_token
+    - debug: var=cloud_access_token.json.access_token
+      when: debug == 'true'
+    - name: get account details
+      uri:
+        url: https://{{ api_url }}/{{ api_version }}/svc-account/user
+        headers: 
+          Authorization: 'Bearer {{ cloud_access_token.json.access_token }}'
+        method: GET
+        body_format: json
+      delegate_to: localhost
+      register: user_info
+    - debug: var=user_info.json.id
+      when: debug == 'true'
+    - name: get subscriptions
+      uri:
+        url: https://{{ api_url }}/{{ api_version }}/svc-subscription/subscriptions?account_id={{ user_info.json.primary_account_id }}
+        headers: 
+          Authorization: 'Bearer {{ cloud_access_token.json.access_token }}'
+        method: GET
+        body_format: json
+      delegate_to: localhost
+      register: subscription_info
+    - debug: var=subscription_info
+      when: debug == 'true'
+    - name: get catalogue items
+      uri:
+        url: https://{{ api_url }}/{{ api_version }}/svc-catalog/catalogs
+        headers: 
+          Authorization: 'Bearer {{ cloud_access_token.json.access_token }}'
+        method: GET
+        body_format: json
+      delegate_to: localhost
+      register: catalogue_info
+    - debug: var=catalogue_info.json.Catalogs
+      when: debug == 'true'
+    - name: Get catalog ID for EAP service
+      set_fact:
+        catalog_id: "{{ item.catalog_id }}"
+        service_type: "{{ item.service_type }}"
+      with_items:
+        "{{ catalogue_info.json.Catalogs | json_query(query) }}"
+      vars: 
+        query: "[].{service_type: service_type, catalog_id: catalog_id} | [?service_type=='waf']"
+    - debug: var=catalog_id
+      when: debug == 'true'
+    - debug: var=service_type
+      when: debug == 'true'
+
+    - name: send create request
+      uri:
+        url: https://{{ api_url}}/{{ api_version }}/svc-subscription/subscriptions
+        headers:
+          Authorization: 'Bearer {{ cloud_access_token.json.access_token }}'
+        method: POST
+        body_format: json
+        body: {
+                "account_id": "{{ user_info.json.primary_account_id }}",
+                "catalog_id": "{{ catalog_id }}",
+                "service_type": "{{ service_type }}",
+                "service_instance_name": "{{ domain_name }}",
+                "configuration": {
+                    "waf_service": {
+                        "application": {
+                            "domain": "{{ domain_name }}",
+                            "remark": "API",
+                            "tls": {
+                                "certificate_id": "",
+                                "enabled": false
+                            },
+                            "waf_regions": {
+                                "aws": {
+                                    "ap-southeast-2": {
+                                        "endpoint": {
+                                            "domain": "{{ domain_name }}",
+                                            "port": 80,
+                                            "use_TLS": false
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "event_logging": {
+                            "enabled": true
+                        },
+                        "industry": "finance",
+                        "policy": {
+                            "compliance_enforcement": {
+                                "data_guard": {
+                                    "cc": true,
+                                    "enabled": true,
+                                    "ssn": true
+                                },
+                                "sensitive_parameters": {
+                                    "enabled": true
+                                }
+                            },
+                            "encoding": "utf-8",
+                            "high_risk_attack_mitigation": {
+                                "allowed_methods": {
+                                    "enabled": true,
+                                    "methods": [
+                                        {
+                                            "contains_http_data": true,
+                                            "name": "POST"
+                                        },
+                                        {
+                                            "contains_http_data": false,
+                                            "name": "HEAD"
+                                        },
+                                        {
+                                            "contains_http_data": false,
+                                            "name": "GET"
+                                        }
+                                    ]
+                                },
+                                "api_compliance_enforcement": {
+                                    "enabled": true
+                                },
+                                "disallowed_file_types": {
+                                    "enabled": true,
+                                    "file_types": [
+                                        "exe",
+                                        "com",
+                                        "bat",
+                                        "dll",
+                                        "back",
+                                        "cfg",
+                                        "dat",
+                                        "cmd",
+                                        "bck",
+                                        "eml",
+                                        "bin",
+                                        "config",
+                                        "ini",
+                                        "old",
+                                        "sav",
+                                        "save",
+                                        "idq",
+                                        "idc",
+                                        "ida",
+                                        "htw",
+                                        "exe1",
+                                        "exe_renamed",
+                                        "hta",
+                                        "htr"
+                                    ]
+                                },
+                                "enabled": true,
+                                "enforcement_mode": "blocking",
+                                "geolocation_enforcement": {
+                                    "disallowed_country_codes": [],
+                                    "enabled": true
+                                },
+                                "http_compliance_enforcement": {
+                                    "enabled": true
+                                },
+                                "ip_enforcement": {
+                                    "enabled": true,
+                                    "ips": [
+                                        {
+                                            "action": "block",
+                                            "address": "178.18.62.195",
+                                            "description": "This is anonymous proxy",
+                                            "log": true
+                                        },
+                                        {
+                                            "action": "allow",
+                                            "address": "1.2.3.5",
+                                            "description": "some description",
+                                            "log": false
+                                        }
+                                    ]
+                                },
+                                "signature_enforcement": {
+                                    "enabled": true
+                                },
+                                "websocket_compliance_enforcement": {
+                                    "enabled": true
+                                }
+                            },
+                            "malicious_ip_enforcement": {
+                                "enabled": true,
+                                "enforcement_mode": "blocking",
+                                "ip_categories": [
+                                    {
+                                        "block": true,
+                                        "log": true,
+                                        "name": "tor_proxies"
+                                    },
+                                    {
+                                        "block": false,
+                                        "log": true,
+                                        "name": "cloud_services"
+                                    }
+                                ]
+                            },
+                            "threat_campaigns": {
+                                "enabled": true,
+                                "enforcement_mode": "blocking"
+                            }
+                        }
+                    }
+                }
+             }
+      delegate_to: localhost
+      register: create_output
+    - debug: var=create_output.json.subscription_id
+      when: debug == 'true'
+    - name: Activate new service
+      uri:
+        url: https://{{ api_url }}/{{ api_version }}/svc-subscription/subscriptions/{{ create_output.json.subscription_id }}/activate
+        headers: 
+          Authorization: 'Bearer {{ cloud_access_token.json.access_token }}'
+        method: POST
+      delegate_to: localhost
+      register: activate_output
+    - debug: var=activate_output
+      when: debug == 'true'
+    - name: get current subscription
+      uri:
+        url: https://{{ api_url }}/{{ api_version }}/svc-subscription/subscriptions/{{ create_output.json.subscription_id }}
+        headers: 
+          Authorization: 'Bearer {{ cloud_access_token.json.access_token }}'
+        method: GET
+        body_format: json
+      delegate_to: localhost
+      register: newsuboutput
+    - debug: var=newsuboutput.json.configuration.details.CNAMEValue
+      when: debug == 'true'
