@@ -1,4 +1,4 @@
-- hosts: "{{ target_hosts | default('aws') }}"
+- hosts: "{{ target_hosts | default('localhost') }}"
   become: yes
   become_user: root
   connection: local
