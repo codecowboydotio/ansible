@@ -10,4 +10,4 @@
         state: present
     - set_fact: 
         apache: groovy
-      
+    - setup:
