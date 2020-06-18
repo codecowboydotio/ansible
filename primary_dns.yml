@@ -11,13 +11,21 @@
       assert:
         that:
           - zone_name != ""
-    - name: Install bind and bind utils
+    - name: Install bind and bind utils fedoraish
       package: 
         name: "{{ item }}"
         state: present
       with_items:
         - bind
         - bind-utils
+      when: ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
+    - name: Install bind and bind utils debianish
+      package: 
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - bind9
+      when: ansible_pkg_mgr == 'apt'
     - name: Update json blob
       template:
         src: primary_dns.j2
@@ -69,3 +77,9 @@
         path: /etc/named.conf
         regexp: 'listen-on port 53 { 127.0.0.1; };'
         line: 'listen-on port 53 { any; };'
+    - name: Start named daemon
+      service:
+        name: named
+        enabled: yes
+        state: started
+
