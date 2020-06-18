@@ -5,7 +5,7 @@
 
   tasks:
     - name: install httpd
-      package:
+      yum:
         name: httpd
         state: present
     - set_fact: 
