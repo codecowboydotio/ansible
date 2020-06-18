@@ -1,22 +1,13 @@
 - hosts: all
   become: yes
   become_user: root
-  connection: local
-
-  vars:
-    api_url: 'api.cloudservices.f5.com'
-    api_version: v1
-    password: 'somepassword'
-    username: 'someusername'
-    zone_name: 'somezone'
-    master_server: '1.1.1.1'
-
+  gather_facts: true 
 
   tasks:
     - name: install httpd
       package:
         name: httpd
         state: present
-      set_fact: 
+    - set_fact: 
         apache: groovy
       
