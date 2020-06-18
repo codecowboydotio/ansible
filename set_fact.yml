@@ -5,7 +5,7 @@
 
   tasks:
     - name: install httpd
-      yum:
+      dnf:
         name: httpd
         state: present
     - set_fact: 
