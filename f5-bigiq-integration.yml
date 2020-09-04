@@ -1,0 +1,71 @@
+- name: Base VE config
+  hosts: "{{ target_hosts | default('f5') }}"
+  connection: local
+  gather_facts: False
+
+  vars:
+    bigip_provider:
+      server: 3.25.83.13
+      user: root
+      password: default
+      validate_certs: no
+      server_port: 8443
+    bigiq_provider:
+      server: 3.25.216.201 
+      user: admin
+      password: admin
+      validate_certs: no
+    bigip_pool: web
+    bigip_pool_member: 10.1.20.100
+    bigip_pool_member_port: 80
+    bigip_vip_port: 80
+    bigiq_managed_device: 3.25.83.13
+    bigiq_managed_username: admin
+    bigiq_managed_password: admin
+    bigiq_managed_device_port: 8443
+
+
+  collections: 
+    - f5networks.f5_modules
+
+  tasks:
+  - name: Create a nameserver
+    bigip_dns_nameserver:
+      name: foo
+      address: 10.10.10.10
+      service_port: '53'
+      state: present
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Create pool
+    bigip_pool:
+      state: present
+      name: "{{ bigip_pool }}"
+      partition: Common
+      lb_method: least-connections-member
+      slow_ramp_time: 120
+      monitors:
+        - http
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Add pool member
+    bigip_pool_member:
+      state: present
+      pool: "{{ bigip_pool }}"
+      partition: Common
+      host: "{{ bigip_pool_member }}"
+      port: "{{ bigip_pool_member_port }}"
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Force full device rediscovery
+    bigiq_device_discovery:
+      # bigip
+      device_address: "{{ bigiq_managed_device }}"
+      device_username: "{{ bigiq_managed_username }}"
+      device_password: "{{ bigiq_managed_password }}"
+      device_port: "{{ bigiq_managed_device_port }}"
+      modules:
+        - ltm
+      force: yes
+      provider: "{{ bigiq_provider }}"
+    delegate_to: localhost

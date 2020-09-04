@@ -1,7 +1,7 @@
-- name: Install selinux bindings
-  package:
-    name: libselinux-python
-    state: present
+#- name: Install selinux bindings
+#  package:
+#    name: libselinux-python
+#    state: present
 - name: Install java
   package:
     name: java-openjdk-devel

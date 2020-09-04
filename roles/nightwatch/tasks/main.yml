@@ -14,10 +14,10 @@
   package: 
     name: nodejs
     state: present
-- name: Install libselinux-python
-  package: 
-    name: libselinux-python
-    state: present
+#- name: Install libselinux-python
+#  package: 
+#    name: libselinux-python
+#    state: present
 - name: install the chrome rpm from a remote repo
   dnf:
     name: 'https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm'

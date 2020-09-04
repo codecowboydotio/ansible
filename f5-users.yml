@@ -1,0 +1,50 @@
+- hosts: "{{ target_hosts | default('f5') }}"
+  gather_facts: False
+
+  vars:
+    bigip_provider:
+      server: 10.1.1.245
+      user: admin
+      password: admin
+      validate_certs: no
+    users:
+     admin:
+       full_path: 'admin'
+       description: 'Admin User'
+       p_name: 'all-partitions'
+       p_role: 'admin'
+       shell: 'none'
+     backup:
+       full_path: 'backup'
+       description: 'backup'
+       p_name: 'all-partitions'
+       p_role: 'admin'
+       shell: 'bash'
+     foo:
+       full_path: 'foo'
+       description: 'foo'
+       p_name: 'all-partitions'
+       p_role: 'admin'
+       shell: 'bash'
+     bar:
+       full_path: 'bar'
+       description: 'bar'
+       p_name: 'all-partitions'
+       p_role: 'admin'
+       shell: 'bash'
+
+  tasks:
+  - name: do stuff
+    bigip_user:
+     username_credential: "{{ item.key }}"
+     partition_access: "all:{{ item.value.p_role }}"
+     shell: "{{ item.value.shell }}"
+     state: present
+     provider: "{{ bigip_provider }}"
+     #full_path: "{{ item.value.full_path }}"
+     #description: "{{ item.value.description }}"
+     #p_name: "{{ item.value.p_name }}"
+    loop: "{{ users | dict2items }}"
+    vars:
+      key: "{{ item.key }}"
+      value: "{{ item.value }}"
