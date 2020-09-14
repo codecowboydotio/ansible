@@ -84,6 +84,12 @@
       debug: var=service_type
       when: debug == 'true'
 
+    - name: Update json blob
+      template:
+        src: eap.j2
+        dest: eap.json
+      delegate_to: localhost
+
     - name: send create request
       uri:
         url: https://{{ api_url}}/{{ api_version }}/svc-subscription/subscriptions
@@ -91,155 +97,7 @@
           Authorization: 'Bearer {{ cloud_access_token.json.access_token }}'
         method: POST
         body_format: json
-        body: {
-                "account_id": "{{ user_info.json.primary_account_id }}",
-                "catalog_id": "{{ catalog_id }}",
-                "service_type": "{{ service_type }}",
-                "service_instance_name": "{{ domain_name }}",
-                "configuration": {
-                    "waf_service": {
-                        "application": {
-                            "domain": "{{ domain_name }}",
-                            "remark": "API",
-                            "tls": {
-                                "certificate_id": "",
-                                "enabled": false
-                            },
-                            "waf_regions": {
-                                "aws": {
-                                    "ap-southeast-2": {
-                                        "endpoint": {
-                                            "domain": "{{ domain_name }}",
-                                            "port": 80,
-                                            "use_TLS": false
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "event_logging": {
-                            "enabled": true
-                        },
-                        "industry": "finance",
-                        "policy": {
-                            "compliance_enforcement": {
-                                "data_guard": {
-                                    "cc": true,
-                                    "enabled": true,
-                                    "ssn": true
-                                },
-                                "sensitive_parameters": {
-                                    "enabled": true
-                                }
-                            },
-                            "encoding": "utf-8",
-                            "high_risk_attack_mitigation": {
-                                "allowed_methods": {
-                                    "enabled": true,
-                                    "methods": [
-                                        {
-                                            "contains_http_data": true,
-                                            "name": "POST"
-                                        },
-                                        {
-                                            "contains_http_data": false,
-                                            "name": "HEAD"
-                                        },
-                                        {
-                                            "contains_http_data": false,
-                                            "name": "GET"
-                                        }
-                                    ]
-                                },
-                                "api_compliance_enforcement": {
-                                    "enabled": true
-                                },
-                                "disallowed_file_types": {
-                                    "enabled": true,
-                                    "file_types": [
-                                        "exe",
-                                        "com",
-                                        "bat",
-                                        "dll",
-                                        "back",
-                                        "cfg",
-                                        "dat",
-                                        "cmd",
-                                        "bck",
-                                        "eml",
-                                        "bin",
-                                        "config",
-                                        "ini",
-                                        "old",
-                                        "sav",
-                                        "save",
-                                        "idq",
-                                        "idc",
-                                        "ida",
-                                        "htw",
-                                        "exe1",
-                                        "exe_renamed",
-                                        "hta",
-                                        "htr"
-                                    ]
-                                },
-                                "enabled": true,
-                                "enforcement_mode": "blocking",
-                                "geolocation_enforcement": {
-                                    "disallowed_country_codes": [],
-                                    "enabled": true
-                                },
-                                "http_compliance_enforcement": {
-                                    "enabled": true
-                                },
-                                "ip_enforcement": {
-                                    "enabled": true,
-                                    "ips": [
-                                        {
-                                            "action": "block",
-                                            "address": "178.18.62.195",
-                                            "description": "This is anonymous proxy",
-                                            "log": true
-                                        },
-                                        {
-                                            "action": "allow",
-                                            "address": "1.2.3.5",
-                                            "description": "some description",
-                                            "log": false
-                                        }
-                                    ]
-                                },
-                                "signature_enforcement": {
-                                    "enabled": true
-                                },
-                                "websocket_compliance_enforcement": {
-                                    "enabled": true
-                                }
-                            },
-                            "malicious_ip_enforcement": {
-                                "enabled": true,
-                                "enforcement_mode": "blocking",
-                                "ip_categories": [
-                                    {
-                                        "block": true,
-                                        "log": true,
-                                        "name": "tor_proxies"
-                                    },
-                                    {
-                                        "block": false,
-                                        "log": true,
-                                        "name": "cloud_services"
-                                    }
-                                ]
-                            },
-                            "threat_campaigns": {
-                                "enabled": true,
-                                "enforcement_mode": "blocking"
-                            }
-                        }
-                    }
-                }
-             }
+        body: "{{ lookup('file','eap.json') }}"
       delegate_to: localhost
       register: create_output
     - name: Show create request output (debug only) 
