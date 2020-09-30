@@ -39,10 +39,10 @@
         name: docker
         enabled: yes
         state: started
-    - name: Install libselinux
-      package:
-        name: libselinux-python
-        state: present
+#    - name: Install libselinux
+#      package:
+#        name: libselinux-python
+#        state: present
     - name: Change value of host key checking on AWX server
       lineinfile:
         path: /etc/ansible/ansible.cfg

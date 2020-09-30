@@ -1,0 +1,45 @@
+- name: Provision ec2 instances based on the environment
+  hosts: localhost
+  connection: local
+  gather_facts: True
+
+  vars_files:
+    - roles/ec2/vars/aws_creds.yml
+  vars:
+    instance_type: t2.large
+    security_group: sg-04f8a0a2b8893f983
+    subnet_id: subnet-00d6dc3b42d57fa0d
+    image: ami-001ccfbcf4a8e0814
+    keypair: svk-keypair-f5
+    region: ap-southeast-2
+    count: 1
+
+  tasks:
+    - name: Launch the new EC2 Instance
+      ec2:
+        aws_access_key: "{{ ec2_access_key }}"
+        aws_secret_key: "{{ ec2_secret_key }}"
+#        group: "{{ security_group }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ image }}"
+        wait: true
+        region: "{{ region }}"
+        keypair: "{{ keypair }}"
+        count: "{{count}}"
+        instance_tags: '{"owner":"svk", "Name":"svk"}'
+        instance_initiated_shutdown_behavior: terminate
+        vpc_subnet_id: "{{ subnet_id }}"
+        #user_data: "{{ lookup('file', 'user_data.sh') }}"
+        user_data: |
+                   #!/bin/sh
+                   dnf -y install wget
+                   #dnf -y install python
+                   #curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+                   #wget --content-disposition https://packages.gitlab.com/gitlab/gitlab-ce/packages/el/7/gitlab-ce-13.4.1-ce.0.el7.x86_64.rpm/download.rpm
+      register: ec2
+    - debug: var=ec2.instances[0].public_ip
+    - name: Wait for machines to come up completely
+      wait_for: host={{ item.public_ip }} port=22
+      with_items: '{{ec2.instances}}'
+    - name: ping to get facts
+      ping:

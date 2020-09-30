@@ -1,0 +1,45 @@
+- hosts: "{{ target_hosts | default('kube') }}"
+  gather_facts: yes
+  tasks:
+  - name: start kubelet
+    systemd:
+      name: kubelet
+      enabled: yes
+      state: started
+    when: inventory_hostname == groups['kube'][0]
+  - name: pull images
+    shell: kubeadm config images pull
+    when: inventory_hostname == groups['kube'][0]
+  - name: perform kubeadm init
+    shell: kubeadm init --pod-network-cidr=192.168.0.0/16 --control-plane-endpoint=kube-api
+    register: kube_init
+    when: inventory_hostname == groups['kube'][0]
+  - debug: var=kube_init
+  - name: set up user
+    shell: "{{ item }}"
+    loop:
+      - mkdir -p $HOME/.kube
+      - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+      - sudo chown $(id -u):$(id -g) $HOME/.kube/config 
+    when: inventory_hostname == groups['kube'][0]
+  - name: generate join
+    shell: kubeadm token create --print-join-command
+    register: join_cmd
+    when: inventory_hostname == groups['kube'][0]
+  - debug: var=join_cmd.stdout
+  - name: create shell file locally
+    shell: echo "{{ join_cmd.stdout }}" > /tmp/go.sh
+    delegate_to: localhost
+    when: inventory_hostname == groups['kube'][0]
+  - name: copy file to workers
+    copy:
+      src: /tmp/go.sh
+      dest: join.sh
+      mode: 700
+    when: (inventory_hostname == groups['kube'][1]) or (inventory_hostname == groups['kube'][2])
+  - name: install network plugin on master
+    shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+    when: inventory_hostname == groups['kube'][0]
+  - name: run join command on worker nodes
+    shell: ~/join.sh
+    when: (inventory_hostname == groups['kube'][1]) or (inventory_hostname == groups['kube'][2])
