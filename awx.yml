@@ -28,6 +28,20 @@
       package: 
         name: ansible
         state: present
+    - name: install grubby
+      package: 
+        name: grubby
+        state: present
+    - name: cater for cgroup v2
+      shell: grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=0"
+    - name: reboot for kernel params to take effect
+      reboot:
+    - name: wait for machine to come up
+      wait_for_connection:
+        connect_timeout: 20
+        sleep: 5
+        delay: 5
+        timeout: 300
     - name: pull AWX from git repo
       git:
         repo: https://github.com/ansible/awx
@@ -39,10 +53,6 @@
         name: docker
         enabled: yes
         state: started
-#    - name: Install libselinux
-#      package:
-#        name: libselinux-python
-#        state: present
     - name: Change value of host key checking on AWX server
       lineinfile:
         path: /etc/ansible/ansible.cfg
