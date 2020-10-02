@@ -1,0 +1,44 @@
+- name: Provision ec2 instances based on the environment
+  hosts: localhost
+  connection: local
+  gather_facts: True
+
+  vars_files:
+    - roles/ec2/vars/aws_creds.yml
+  vars:
+    instance_type: t2.large
+    security_group: sg-00
+    subnet_id: subnet-00
+    image: ami-012acc5cdab881a3b
+    keypair: keypair
+    region: ap-southeast-2
+    count: 1
+    bigip_password: AAAAA
+    bigip_license: AAAA
+
+  tasks:
+    - name: Update userdata template
+      template:
+        src: bigip_aws.j2
+        dest: bigip_aws.sh
+    - name: Launch the new EC2 Instance
+      ec2:
+        aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+        aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ image }}"
+        wait: true
+        region: "{{ region }}"
+        keypair: "{{ keypair }}"
+        count: "{{count}}"
+        instance_tags: '{"owner":"svk", "Name":"bigip", "boxtype":"bigip"}'
+        instance_initiated_shutdown_behavior: terminate
+        vpc_subnet_id: "{{ subnet_id }}"
+        user_data: "{{ lookup('file', 'bigip_aws.sh') }}"
+      register: ec2
+    - debug: var=ec2.instances[0].public_ip
+    - name: Wait for machines to come up completely
+      wait_for: host={{ item.public_ip }} port=22
+      with_items: '{{ec2.instances}}'
+    - name: ping to get facts
+      ping:

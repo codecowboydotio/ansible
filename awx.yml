@@ -6,32 +6,23 @@
   tasks:
     - name: Install python
       raw: dnf install python -y
-    - name: install git
+    - name: install packages
       package: 
-        name: git
+        name: "{{ item }}"
         state: present
-    - name: install docker
-      package: 
-        name: docker
-        state: present
-    - name: install docker-py
+      loop:
+        - git
+        - docker
+        - make
+        - ansible
+        - grubby
+    - name: install packages
       pip:
-        name: docker-py
-    - name: install ansible-tower-cli
-      pip:
-        name: ansible-tower-cli
-    - name: install make
-      package: 
-        name: make
-        state: present
-    - name: install ansible
-      package: 
-        name: ansible
-        state: present
-    - name: install grubby
-      package: 
-        name: grubby
-        state: present
+        name: "{{ item }}"
+      loop:
+        - docker
+        - docker-compose
+        - ansible-tower-cli
     - name: cater for cgroup v2
       shell: grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=0"
     - name: reboot for kernel params to take effect
@@ -47,7 +38,7 @@
         repo: https://github.com/ansible/awx
         dest: /awx
         force: yes
-        version: 2.1.2
+        version: 3.0.1
     - name: Start docker daemon
       service:
         name: docker
