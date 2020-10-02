@@ -3,8 +3,6 @@
   connection: local
   gather_facts: True
 
-  vars_files:
-    - roles/ec2/vars/aws_creds.yml
   vars:
     instance_type: t2.large
     security_group: sg-00
