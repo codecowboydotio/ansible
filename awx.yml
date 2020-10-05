@@ -124,5 +124,9 @@
         - tower-cli job_template associate_credential --credential aws-account --job-template "Post AS3 declaration"
         - tower-cli workflow create --name "deploy_as3"
         - tower-cli workflow schema deploy_as3 @/root/deploy_as3.yml
+        - tower-cli job_template create --name "create_bigip" --job-type run --inventory localhost --project ansible --playbook bigip_aws_awx.yml --ask-variables-on-launch "true" --extra-vars "target_hosts=all security_group=sg-000 subnet_id=subnet-000 keypair=keypair bigip_password=admin bigip_license=AAA"
+        - tower-cli job_template associate_credential --credential aws-account --job-template "create_bigip"
+        - tower-cli job_template create --name "install telegraf" --job-type run --inventory AWS --project ansible --playbook telegraf.yml --ask-variables-on-launch "true" --extra-vars "target_hosts=all beacon_access_token=AAA"
+        - tower-cli job_template associate_credential --credential root-ssh --job-template "install telegraf"
     - name: Install F5 SDK
       shell: docker exec awx_task pip install f5-sdk
