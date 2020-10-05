@@ -21,14 +21,16 @@
       ec2:
         aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
         aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
-#        group: "{{ security_group }}"
         instance_type: "{{ instance_type }}"
         image: "{{ image }}"
         wait: true
         region: "{{ region }}"
         keypair: "{{ keypair }}"
         count: "{{count}}"
-        instance_tags: '{"owner":"svk","application":"build"}'
+        instance_tags: 
+          Name: svk-app-server
+          owner: svk
+          application: build
         instance_initiated_shutdown_behavior: terminate
         vpc_subnet_id: "{{ subnet_id }}"
       register: ec2
