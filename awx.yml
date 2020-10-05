@@ -114,7 +114,7 @@
       shell: "{{ item }}" 
       with_items:
         - tower-cli workflow create --name "webapp_workflow"
-        - tower-cli workflow schema webapp_workflow @/root/pacman_workflow.yml
+      #  - tower-cli workflow schema webapp_workflow @/root/pacman_workflow.yml
         - tower-cli project create --name ansible-AS3 --scm-type git --scm-url http://github.com/codecowboydotio/ansible-AS3 --organization Default --wait
         - tower-cli inventory create --name aws-bigip --organization Default
         - tower-cli inventory_source create --name "aws-source" --inventory "aws-bigip" --source ec2 --credential "aws-account" --update-on-launch "true" --overwrite "true" --instance-filters "tag:boxtype=bigip"
@@ -128,5 +128,6 @@
         - tower-cli job_template associate_credential --credential aws-account --job-template "create_bigip"
         - tower-cli job_template create --name "install telegraf" --job-type run --inventory AWS --project ansible --playbook telegraf.yml --ask-variables-on-launch "true" --extra-vars "target_hosts=all beacon_access_token=AAA"
         - tower-cli job_template associate_credential --credential root-ssh --job-template "install telegraf"
+        - tower-cli workflow schema webapp_workflow @/root/pacman_workflow.yml
     - name: Install F5 SDK
       shell: docker exec awx_task pip install f5-sdk

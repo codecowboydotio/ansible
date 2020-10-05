@@ -30,7 +30,7 @@ tower-cli job_template associate_credential --credential aws-account --job-templ
 #create workflow
 tower-cli workflow create --name "webapp_workflow"
 sleep 10
-tower-cli workflow schema webapp_workflow @pacman_workflow.yml
+#tower-cli workflow schema webapp_workflow @pacman_workflow.yml
 
 # delete default stuff
 tower-cli job_template delete --name "Demo Job Template"
