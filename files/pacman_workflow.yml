@@ -2,4 +2,6 @@
   success:
     - job_template: "Install Application"
       success:
-        - job_template: "Update Tags"
+        - job_template: "install telegraf"
+          success:
+           - job_template: "Update Tags"
