@@ -1,0 +1,77 @@
+- name: Install telegraf
+  hosts: "{{ target_hosts | default('aws') }}"
+  gather_facts: False
+  become: yes
+  become_user: root
+
+  vars:
+    beacon_access_token: AAA
+  
+  tasks:
+    - name: Install python
+      raw: dnf install python -y
+    - name: set up repo
+      copy:
+        content: |
+                 [influxdb]
+                 name = InfluxDB Repository - RHEL 
+                 baseurl = https://repos.influxdata.com/rhel/7/x86_64/stable/
+                 enabled = 1
+                 gpgcheck = 1
+                 gpgkey = https://repos.influxdata.com/influxdb.key 
+        dest: /etc/yum.repos.d/influxdb.repo
+    - name: Install telegraf
+      package:
+        name: telegraf
+        state: present
+    - name: Update the httpd.conf to allow server stats
+      blockinfile:
+        path: /etc/httpd/conf/httpd.conf
+        block: |
+               ExtendedStatus on
+               <Location /server-status>
+               SetHandler server-status
+               Order deny,allow
+               Deny from 1.1.1.1
+               Allow from all
+               </Location>
+    - name: Update config file
+      blockinfile:
+        path: /etc/telegraf/telegraf.conf
+        block: |
+               [[outputs.http]]
+
+               ## URL is the address to send metrics to
+               url = "https://ingestion.ovr.prd.f5aas.com:50443/beacon/v1/ingest-metrics"
+
+               ## Timeout for HTTP message
+               timeout = "120s"
+
+               ## HTTP method
+               method = "POST"
+
+               ## Optional TLS Config
+               # tls_ca = "/etc/telegraf/ca.pem"
+               # tls_cert = "/etc/telegraf/cert.pem"
+               # tls_key = "/etc/telegraf/key.pem"
+               ## Use TLS but skip chain & host verification
+               insecure_skip_verify = true
+
+               ## Data format to output.
+               data_format = "influx"
+
+               ## HTTP Content-Encoding for write request body
+               content_encoding = "identity"
+
+               ## Additional HTTP headers
+               [outputs.http.headers]
+                 Content-Type = "text/plain; charset=utf-8"
+                 X-F5-Ingestion-Token = "{{ beacon_access_token }}"
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted   
+    - name: start telegraf
+      service:
+        name: telegraf
+        state: started   
