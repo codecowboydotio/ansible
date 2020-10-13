@@ -1,5 +1,7 @@
 - hosts: "{{ target_hosts | default('kube') }}"
   gather_facts: yes
+  become: true
+
   tasks:
   - name: start kubelet
     systemd:
@@ -34,12 +36,23 @@
   - name: copy file to workers
     copy:
       src: /tmp/go.sh
-      dest: join.sh
+      dest: /tmp/join.sh
       mode: 700
     when: (inventory_hostname == groups['kube'][1]) or (inventory_hostname == groups['kube'][2])
   - name: install network plugin on master
     shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
     when: inventory_hostname == groups['kube'][0]
   - name: run join command on worker nodes
-    shell: ~/join.sh
+    shell: /tmp/join.sh
     when: (inventory_hostname == groups['kube'][1]) or (inventory_hostname == groups['kube'][2])
+  - name: copy demo files to api server
+    copy:
+      src: "f5-kube-files/{{ item }}"
+      dest: "{{ item }}"
+    loop:
+      - create-f5-user-role.sh  
+      - deployment-hello.yml  
+      - f5-cis-nodeport-deploy.yml  
+      - ingress-hello.yml  
+      - service-hello.yml
+    when: inventory_hostname == groups['kube'][0]

@@ -19,10 +19,10 @@
       package:
         name: httpd
         state: present
-    - name: install libselinux-python
-      package:
-        name: libselinux-python
-        state: present
+#    - name: install libselinux-python
+#      package:
+#        name: libselinux-python
+#        state: present
     - name: pull git repo
       git:
         repo: https://github.com/platzhersh/pacman-canvas

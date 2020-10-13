@@ -1,0 +1,43 @@
+- name: Provision ec2 instances based on the environment
+  hosts: "{{ target_hosts | default('aws') }}"
+  gather_facts: False
+  become: yes
+  become_user: root
+  
+  vars:
+    splunk_password: password 
+
+  tasks:
+    - name: Install python
+      raw: dnf install python -y
+    - name: install packages
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - git
+        - docker
+        - grubby
+    - name: cater for cgroup v2
+      pip:
+        name: "{{ item }}"
+      loop:
+        - docker-py
+    - name: cater for cgroup v2
+      shell: grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=0"
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+    - name: reboot for kernel params to take effect
+      reboot:
+    - name: Pull container image
+      docker_image:
+        name: splunk/splunk:latest
+    - name: Start splunk container
+      docker_container:
+        name: agent
+        image: splunk/splunk
+        published_ports: 80:8000
+        env:
+          SPLUNK_START_ARGS: --accept-license
+          SPLUNK_PASSWORD: "{{ splunk_password }}"
