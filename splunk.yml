@@ -37,7 +37,9 @@
       docker_container:
         name: agent
         image: splunk/splunk
-        published_ports: 80:8000
+        published_ports: 
+          - 80:8000
+          - 8088:8088
         env:
           SPLUNK_START_ARGS: --accept-license
           SPLUNK_PASSWORD: "{{ splunk_password }}"

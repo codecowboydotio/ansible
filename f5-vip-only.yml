@@ -1,0 +1,45 @@
+- name: Base VE config
+  hosts: "{{ target_hosts | default('f5') }}"
+  connection: local
+  gather_facts: False
+
+  vars:
+    bigip_provider:
+      server: 172.31.28.160
+      server_port: 8443
+      user: admin
+      password: admin
+      validate_certs: no
+    pool_name: ansible-pool
+    pool_lb_method: round-robin
+    bigip_virtual_name: virt3
+    bigip_virtual_destination: 233.1.1.1
+    bigip_vip_port: 80
+    bigip_pool: pool2
+    bigip_virtual_snat_type: automap
+    bigip_virtual_description: "Test VIP 3"
+
+
+  tasks:
+  - name: Create pool
+    bigip_pool:
+      state: present
+      name: "{{ pool_name }}"
+      partition: Common
+      lb_method: "{{ pool_lb_method }}"
+      monitors:
+        - http
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  - name: Add virtual server
+    bigip_virtual_server:
+      state: present
+      partition: Common
+      name: "{{ bigip_virtual_name }}"
+      destination: "{{ bigip_virtual_destination }}"
+      port: "{{ bigip_vip_port }}"
+      pool: "{{ pool_name }}"
+      snat: "{{ bigip_virtual_snat_type }}"
+      description: "{{ bigip_virtual_description }}"
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
