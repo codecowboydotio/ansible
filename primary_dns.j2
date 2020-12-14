@@ -1,5 +1,5 @@
 ; SOA Record
-{{ zone_name }}.	60	 IN 	SOA	{{ inventory_hostname }}.	dns.{{ zone_name }}. (
+@	IN 	SOA	{{ inventory_hostname }}.	dns.{{ zone_name }}. (
 					01 ;serial
 					300 ;refresh
 					300 ;retry
@@ -8,10 +8,10 @@
 					) 
 
 
-@	60	 IN 	NS	ns1.f5cloudservices.com.
-@	60	 IN 	NS	ns2.f5cloudservices.com.
-gslb.{{ zone_name }}.	60	 IN 	NS	ns1.f5cloudservices.com.
-gslb.{{ zone_name }}.	60	 IN 	NS	ns2.f5cloudservices.com.
+@	IN 	NS	ns1.f5cloudservices.com.
+@	IN 	NS	ns2.f5cloudservices.com.
+;gslb.{{ zone_name }}.	IN 	NS	ns1.f5cloudservices.com.
+;gslb.{{ zone_name }}.	IN 	NS	ns2.f5cloudservices.com.
 
 ; A Records
 @	60	 IN 	A	1.1.1.1

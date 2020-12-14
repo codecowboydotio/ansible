@@ -1,0 +1,31 @@
+- hosts: "{{ target_hosts | default('nginx') }}"
+  become: yes
+  become_user: root
+
+  vars:
+    update_type: on
+
+
+  tasks:
+    - name: Check all vars are present
+      assert:
+        that:
+          - update_type != ""
+    - name: Do stuff
+      block:
+        - name: Turn NGINX NAP on
+          lineinfile:
+            path: /etc/nginx/nginx.conf
+            regexp: '#app_protect_enable on;'
+            line: app_protect_enable on;
+      when: update_type == 'on'
+    - name: Do stuff
+      block:
+        - name: Turn NGINX NAP off
+          lineinfile:
+            path: /etc/nginx/nginx.conf
+            regexp: 'app_protect_enable on;'
+            line: '#app_protect_enable on;'
+      when: update_type == 'off'
+    - name: Restart nginx
+      shell: nginx -s reload

@@ -45,7 +45,7 @@
         mode: 0640
     - name: Copy gslb zone file into place
       copy:
-        src: ./gslb.db
+        src: /root/gslb.db
         dest: /var/named/gslb.db
         owner: root
         group: named

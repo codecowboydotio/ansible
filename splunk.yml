@@ -8,28 +8,28 @@
     splunk_password: password 
 
   tasks:
-    - name: Install python
-      raw: dnf install python -y
-    - name: install packages
-      package:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - git
-        - docker
-        - grubby
-    - name: cater for cgroup v2
-      pip:
-        name: "{{ item }}"
-      loop:
-        - docker-py
-    - name: cater for cgroup v2
-      shell: grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=0"
-    - name: Disable SELinux
-      selinux:
-        state: disabled
-    - name: reboot for kernel params to take effect
-      reboot:
+#    - name: Install python
+#      raw: dnf install python -y
+#    - name: install packages
+#      package:
+#        name: "{{ item }}"
+#        state: present
+#      loop:
+#        - git
+#        - docker
+#        - grubby
+#    - name: cater for cgroup v2
+#      pip:
+#        name: "{{ item }}"
+#      loop:
+#        - docker-py
+#    - name: cater for cgroup v2
+#      shell: grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=0"
+#    - name: Disable SELinux
+#      selinux:
+#        state: disabled
+#    - name: reboot for kernel params to take effect
+#      reboot:
     - name: Pull container image
       docker_image:
         name: splunk/splunk:latest
