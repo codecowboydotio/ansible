@@ -1,0 +1,33 @@
+- name: Base VE config
+  hosts: "{{ target_hosts | default('f5') }}"
+#  connection: local
+  gather_facts: true
+
+  vars:
+    bigip_provider:
+      server: 10.10.14.91
+      user: admin
+      password: admin
+      validate_certs: no
+
+  tasks:
+#  - name: vcmp guest
+#    bigip_vcmp_guest:
+#      name: "foo"
+#      provider: "{{ bigip_provider }}"
+#  - name: Create vCMP guest
+#    bigip_vcmp_guest:
+#      name: "vk"
+#      initial_image: "BIGIP-14.1.0-0.0.116.iso"
+#      mgmt_network: bridged
+#      mgmt_address: 10.10.14.92/24
+#      state: present
+#      provider: "{{ bigip_provider }}"
+  - name: Create vCMP guest
+    bigip_vcmp_guest:
+      name: "vk2"
+      initial_image: "BIGIP-15.1.0.1-0.0.4.iso"
+      mgmt_network: bridged
+      mgmt_address: 10.10.14.94/24
+      state: present
+      provider: "{{ bigip_provider }}"

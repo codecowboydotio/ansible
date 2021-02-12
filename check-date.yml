@@ -1,0 +1,26 @@
+- name: Base VE config
+  hosts: "{{ target_hosts | default('f5') }}"
+#  connection: local
+  gather_facts: True
+
+  vars:
+    bigip_provider:
+      server: 10.1.1.245
+      user: admin
+      password: admin
+      validate_certs: no
+    license_dates:
+      15_1_0: 20191105
+      16_0_0: 20200616
+
+  tasks:
+  - name: get service check date
+    shell:  grep "Service check date" /config/bigip.license | awk '{print $5}'
+    register: check_date
+  - debug: var=check_date
+  - debug: var=license_dates.15_1_0
+  - set_fact:
+      check_dte_int: "{{ check_date.stdout | int }}"
+      lic_dte_int: "{{ license_dates.15_1_0 | int }}"
+  - debug:
+      msg: "License date is {{ lic_dte_int }} check date is {{ check_dte_int }} delta is {{ lic_dte_int | int - check_dte_int | int }}"
