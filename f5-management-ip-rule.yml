@@ -1,0 +1,55 @@
+- name: Base VE config
+  hosts: "{{ target_hosts | default('f5') }}"
+#  connection: local
+  gather_facts: False
+
+  vars:
+    ntp_var: [1.1.1.1, 2.2.2.2, 3.3.3.3]
+    device: 13.239.56.250
+    device_port: 8443
+    api_url: mgmt/tm/security/firewall/management-ip-rules/rules
+    username: admin
+    password: admin
+
+  tasks:
+    - name: Get all current management firewall rule
+      uri:
+        url: https://{{device}}:{{device_port}}/{{ api_url }}
+        user: "{{ username }}"
+        password: "{{ password }}"
+        method: GET
+        validate_certs: no
+      delegate_to: localhost
+      register: output
+    - debug: var=output
+    - name: create management firewall rule
+      uri:
+        url: https://{{device}}:{{device_port}}/{{ api_url }}/test_rule
+        user: "{{ username }}"
+        password: "{{ password }}"
+        body: 
+          {
+            "place-after": "last",
+            "fullPath": "test_rule",
+            "action": "accept",
+            "ipProtocol": "any",
+            "log": "yes",
+            "ruleNumber": "2",
+            "status": "enabled",
+            "destination": {},
+               "source": {
+                        "addresses": [
+                            {
+                                "name": "10.1.0.0-10.1.1.0"
+                            }
+                        ]
+               }
+           }
+        method: POST
+        headers:
+          Content-Type: application/json
+        body_format: json
+        validate_certs: no
+      delegate_to: localhost
+      register: post_output
+    - debug: var=post_output
