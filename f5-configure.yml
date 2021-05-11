@@ -161,3 +161,24 @@
         response_policy: no
       provider: "{{ bigip_provider }}"
     delegate_to: localhost
+  - name: Create policies
+    bigip_policy:
+      name: Policy-Foo
+      state: present
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  
+  - name: Add a rule to the new policy
+    bigip_policy_rule:
+      policy: Policy-Foo
+      name: rule3
+      conditions:
+        - type: http_uri
+          path_begins_with_any:
+            - /ABC
+      actions:
+        - type: forward
+          pool: web
+      provider: "{{ bigip_provider }}"
+    delegate_to: localhost
+  
