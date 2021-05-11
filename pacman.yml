@@ -7,11 +7,11 @@
 #    - roles/ec2/vars/aws_creds.yml
   vars:
     instance_type: t2.micro
-    security_group: sg-04f8a0a2b8893f983
-    subnet_id: subnet-00d6dc3b42d57fa0d
+    security_group: sg-5f6e363b
+    subnet_id: subnet-4db34914
 #    image: ami-0009e96d7d65e3779
     image: ami-0024a0637256e4d4f
-    keypair: svk-keypair-f5
+    keypair: svk_keypair
     region: ap-southeast-2
     count: 1
 
