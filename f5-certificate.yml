@@ -1,0 +1,54 @@
+- name: BIG-IP cleanup
+  hosts: "{{ target_hosts | default('f5') }}"
+  gather_facts: True
+
+## openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 1
+
+  vars:
+    goober: []
+    provider:
+      server: "{{ inventory_hostname }}"
+      user: admin
+      password: admin
+      validate_certs: no
+
+
+  tasks:
+  - name: Get certificates from BIG-IP
+    f5networks.f5_modules.bigip_device_info:
+      gather_subset:
+        - ssl-certs
+      provider: "{{ provider }}"
+    register: certs
+    delegate_to: localhost
+  - name: Debug certs
+    ansible.builtin.debug: 
+      var: certs
+
+
+  - name: Print certs for debug purposes
+    ansible.builtin.debug:
+      msg: "{{ index }} - {{ item.name }} - {{ item.expiration_date }}"
+    loop: "{{ certs.ssl_certs|flatten(levels=1) }}"
+    loop_control:
+      index_var: index
+
+  - name: Build data structure
+    set_fact:
+      goober: "{{ goober | combine({item.name: item.expiration_timestamp}, recursive=True) }}"
+    loop: "{{ certs.ssl_certs|flatten(levels=1) }}"
+    loop_control:
+      index_var: index
+  - name: Check data structure
+    ansible.builtin.debug:
+      msg: "{{ goober }}"
+  - name: Print current epoch date and time
+    ansible.builtin.debug:
+      msg: "{{ ansible_date_time.epoch }}"
+  - name: loop and validate certs
+    ansible.builtin.debug:
+      msg: "Certificate: {{ item.key }} expires at {{ '%H:%M:%S %d-%b-%Y %Z' | strftime(item.value) }}"
+    loop: "{{ goober | dict2items }}"
+    when: (ansible_date_time.epoch | int - item.value | int) < 0
+
+### current date minus expire. if negative then still ok if greater than 0 then expired

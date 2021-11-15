@@ -1,0 +1,56 @@
+- name: BIG-IP cleanup
+  hosts: "{{ target_hosts | default('f5') }}"
+  gather_facts: True
+
+  vars:
+    provider:
+      server: "{{ inventory_hostname }}"
+      user: admin
+      password: admin
+      validate_certs: no
+
+
+  tasks:
+  - name: Get Software Volume Information
+    f5networks.f5_modules.bigip_device_info:
+      gather_subset:
+        - software-volumes
+        - software-images
+        - software-hotfixes
+      provider: "{{ provider }}"
+    register: sv
+    delegate_to: localhost
+  - name: Output all software images
+    ansible.builtin.debug: 
+      var: sv.software_images
+  - name: Example of getting index and name
+    ansible.builtin.debug:
+      msg: "{{ index }} - {{ item.name }}"
+    loop: "{{ sv.software_images|flatten(levels=1) }}"
+    loop_control:
+      index_var: index
+  - name: Remove images
+    f5networks.f5_modules.bigip_software_image:
+      image: "{{ item.name }}"
+      state: absent
+      provider: "{{ provider }}"
+    loop: "{{ sv.software_images|flatten(levels=1) }}"
+    loop_control:
+      index_var: index
+  #- name: Get non active software volumes 
+  #  ansible.builtin.debug:
+  #    msg: "{{ index }} - {{ item.name }}"
+  #  loop: "{{ sv.software_volumes|flatten(levels=1) }}"
+  #  loop_control:
+  #    index_var: index
+  #  when:
+  #    item.active == "no"
+  #- name: run show version on remote devices
+  #  bigip_command:
+  #    commands: list /sys software volume
+  #    provider: "{{ provider }}"
+  #  register: cmd_result
+  #  delegate_to: localhost
+  #- name: with_indexed_items -> loop
+  #  ansible.builtin.debug:
+  #    msg: "{{ cmd_result }}"

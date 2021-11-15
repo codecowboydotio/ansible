@@ -91,7 +91,7 @@
       provider: "{{ bigip_provider }}"
     delegate_to: localhost
     register: bigip_stuff
-  - debug: var=bigip_stuff.devices
+  - debug: var=bigip_stuff.devices[0].software_version
   - name: set ntp server
     bigip_device_ntp:
       timezone: Australia/Victoria
