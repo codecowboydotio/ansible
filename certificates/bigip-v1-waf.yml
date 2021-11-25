@@ -1,0 +1,28 @@
+- name: BIG-IP Import waf policy
+  hosts: "{{ target_hosts | default('f5') }}"
+  gather_facts: True
+
+###
+#ansible-playbook bigip-v1-import-cert-and-key.yml -e cert_state=absent
+###
+
+  vars:
+    provider:
+      server: "{{ inventory_hostname }}"
+      user: admin
+      password: admin
+      validate_certs: no
+
+
+  tasks:
+  - name: Get waf policy from web
+    ansible.builtin.get_url:
+      url: https://raw.githubusercontent.com/codecowboydotio/f5-waf-policy/master/test-policy.xml
+      dest: ./fooble.xml
+    delegate_to: localhost
+  - name: Deploy WAF policy to BIG-IP
+    bigip_asm_policy_import:
+      name: ansible_v1_new_asm_policy
+      source: ./fooble.xml
+      provider: "{{ provider }}"
+    delegate_to: localhost

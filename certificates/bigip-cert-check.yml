@@ -1,0 +1,60 @@
+- name: BIG-IP check for expired certs
+  hosts: "{{ target_hosts | default('f5') }}"
+  gather_facts: True
+
+## openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 1
+# don't forget to set ANSIBLE_DISPLAY_SKIPPED_HOSTS=false
+
+  vars:
+    cert_data_structure: []
+    run_type: standard
+    provider:
+      server: "{{ inventory_hostname }}"
+      user: admin
+      password: admin
+      validate_certs: no
+
+
+  tasks:
+  - name: Get certificates from BIG-IP
+    f5networks.f5_modules.bigip_device_info:
+      gather_subset:
+        - ssl-certs
+      provider: "{{ provider }}"
+    register: certs
+    delegate_to: localhost
+
+  - name: Debug certs
+    ansible.builtin.debug: 
+      var: certs
+    when: run_type == 'debug'
+  - name: Print certs for debug purposes
+    ansible.builtin.debug:
+      msg: "{{ index }} - {{ item.name }} - {{ item.expiration_date }}"
+    loop: "{{ certs.ssl_certs|flatten(levels=1) }}"
+    loop_control:
+      index_var: index
+    when: run_type == 'debug'
+
+  - name: Build data structure
+    set_fact:
+      cert_data_structure: "{{ cert_data_structure | combine({item.full_path: item.expiration_timestamp}, recursive=True) }}"
+    loop: "{{ certs.ssl_certs|flatten(levels=1) }}"
+    loop_control:
+      index_var: index
+    no_log: true
+  - name: Check data structure
+    ansible.builtin.debug:
+      msg: "{{ cert_data_structure }}"
+    when: run_type == 'debug'
+  - name: Print current epoch date and time
+    ansible.builtin.debug:
+      msg: "{{ ansible_date_time.epoch }}"
+    when: run_type == 'debug'
+  - name: loop and validate certs
+    ansible.builtin.debug:
+      msg: "Certificate: {{ item.key }} expired at {{ '%H:%M:%S %d-%b-%Y %Z' | strftime(item.value) }}"
+    loop: "{{ cert_data_structure | dict2items }}"
+    when: (ansible_date_time.epoch | int - item.value | int) > 0
+
+### current date minus expire. if negative then still ok if greater than 0 then expired

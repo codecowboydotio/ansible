@@ -1,0 +1,27 @@
+- name: BIG-IP Import or remove certificates
+  hosts: "{{ target_hosts | default('f5') }}"
+  gather_facts: True
+
+###
+#ansible-playbook bigip-v1-import-cert-and-key.yml -e cert_state=absent
+###
+
+  vars:
+    add_rm: "{{ cert_state | default('present') }}"
+    provider:
+      server: "{{ inventory_hostname }}"
+      user: admin
+      password: admin
+      validate_certs: no
+
+
+  tasks:
+  - name: Import or remove both key and cert - making cert "{{add_rm}}"
+    f5networks.f5_modules.bigip_ssl_key_cert:
+      key_content: "{{ lookup('file', 'key.pem') }}"
+      key_name: cert1
+      cert_content: "{{ lookup('file', 'cert.pem') }}"
+      cert_name: cert1
+      state: "{{ add_rm }}"
+      provider: "{{ provider }}"
+    delegate_to: localhost

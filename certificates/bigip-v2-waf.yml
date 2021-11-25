@@ -1,0 +1,51 @@
+- name: BIG-IP Import waf policy
+  hosts: "{{ target_hosts | default('f5') }}"
+  gather_facts: True
+
+  collections:
+    - ansible.netcommon
+    - f5networks.f5_bigip
+
+  connection: httpapi
+
+  vars:
+    ansible_host: "10.1.1.245"
+    ansible_user: "admin"
+    ansible_httpapi_password: "admin"
+    ansible_network_os: f5networks.f5_bigip.bigip
+    ansible_httpapi_port: 443
+    ansible_httpapi_use_ssl: yes
+    ansible_httpapi_validate_certs: no
+
+    VIP_ADDRESS: 4.4.4.4
+    CONSUL_SERVER: 2.2.2.2
+    WAF_MODE: blocking
+    file_name: bigip_as3_waf.json
+    bigip_port: 443
+    user: admin
+    password: admin
+    http_method: POST
+
+  tasks:
+  - name: Update AS3 template
+    template:
+      src: bigip_as3_waf.j2
+      dest: bigip_as3_waf.json
+#  - name: Deploy or Update AS3
+#    f5networks.f5_bigip.bigip_as3_deploy:
+#      content: "{{ lookup('file', 'bigip_as3_waf.json') }}"
+#      timeout: 1800
+  - name: URI POST Tenant
+    vars:
+      as3_spec: "{{ lookup('file', '{{ file_name }}') | from_json }}"
+    uri:
+       url: "https://{{ inventory_hostname }}:{{ bigip_port }}/mgmt/shared/appsvcs/declare"
+       method: "{{ http_method }}"
+       user: "{{ user }}"
+       password: "{{ password }}"
+       force_basic_auth: yes
+       validate_certs: no
+       body: "{{ as3_spec }}"
+       body_format: json
+    delegate_to: localhost
+
